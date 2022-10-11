@@ -1,34 +1,52 @@
-import {Component} from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 import {
     AlphaOracleService,
     DropFile,
     FD_LOG,
+    LogCleaner,
     LogToPartialOrderTransformerService,
     PartialOrderNetWithContainedTraces,
     PetriNet,
+    PetriNetRegionSynthesisService,
+    PetriNetSerialisationService,
     Trace,
     XesLogParserService
 } from 'ilpn-components';
+import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent extends LogCleaner implements OnDestroy {
+
+    private _sub: Subscription | undefined;
 
     fdLog = FD_LOG;
 
     log: Array<Trace> | undefined;
     pos: Array<PartialOrderNetWithContainedTraces> = [];
 
+    model: PetriNet | undefined;
+
     constructor(private _logParser: XesLogParserService,
                 private _oracle: AlphaOracleService,
-                private _poTransformer: LogToPartialOrderTransformerService) {
+                private _poTransformer: LogToPartialOrderTransformerService,
+                private _synthesisService: PetriNetRegionSynthesisService,
+                private _serialisationService: PetriNetSerialisationService) {
+        super();
+    }
+
+    ngOnDestroy(): void {
+        if (this._sub) {
+            this._sub.unsubscribe();
+        }
     }
 
     processUpload(files: Array<DropFile>) {
         this.log = this._logParser.parse(files[0].content);
+        this.log = this.cleanLog(this.log);
         if (this.log !== undefined) {
             const concurrency = this._oracle.determineConcurrency(this.log, {
                 lookAheadDistance: 1,
@@ -37,5 +55,19 @@ export class AppComponent {
             this.pos = this._poTransformer.transformToPartialOrders(this.log, concurrency);
             this.pos.sort((a, b) => b.net.frequency! - a.net.frequency!);
         }
+    }
+
+    updateModel(selectedIndex: number) {
+        const nets = [];
+        for (let i = 0; i <= selectedIndex; i++) {
+            nets.push(this.pos[i].net);
+        }
+
+        this._sub = this._synthesisService.synthesise(nets, {
+            oneBoundRegions: true
+        }).subscribe(r => {
+            this.model = r.result;
+            console.log(this._serialisationService.serialise(this.model));
+        });
     }
 }

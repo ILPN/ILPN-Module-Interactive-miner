@@ -10,7 +10,7 @@
 
         </div>
         <div class="content-side content-right" fxFlex="15">
-            <app-cumulative-slider [pos]="pos"></app-cumulative-slider>
+            <app-cumulative-slider [pos]="pos" (selectedIndices)="updateModel($event)"></app-cumulative-slider>
         </div>
     </div>
 
