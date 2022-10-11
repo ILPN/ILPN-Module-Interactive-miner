@@ -2,8 +2,16 @@
     <h2>TODO title</h2>
     <hr>
 
-    <div fxLayout="row wrap" fxLayoutAlign="space-evenly start">
+    <div flexLayout="row" flexLayoutAlign="start stretch" class="content-wrapper">
+        <div flexLayout="column" flexLayoutAlign="start stretch" class="content-side content-left" fxFlex="15">
+            <ilpn-file-upload [fileDisplay]="fdLog" descriptionText="Drop a XES log file here" (fileContent)="processUpload($event)"></ilpn-file-upload>
+        </div>
+        <div fxFlex>
 
+        </div>
+        <div class="content-side content-right" fxFlex="15">
+
+        </div>
     </div>
 
 </ilpn-page-layout>

@@ -21,3 +21,22 @@ hr {
     margin-bottom: 30px;
     width: 100%;
 }
+
+.content-wrapper {
+    border-style: dotted;
+    border-color: #d3d3d3;
+    min-height: 800px;
+    height: 90%;
+}
+
+.content-side {
+    border-color: #d3d3d3;
+}
+
+.content-left {
+    border-right-style: dotted;
+}
+
+.content-right {
+    border-left-style: dotted;
+}
