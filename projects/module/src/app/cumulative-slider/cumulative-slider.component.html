@@ -1,6 +1,10 @@
 <div class="height-100" fxLayout="row" fxLayoutAlign="start stretch">
-    <mat-slider invert min="0" [max]="buttons.length" step="1" vertical class="height-100"></mat-slider>
+    <mat-slider invert min="0" [max]="buttons.length - 1" step="1" vertical class="height-100" [formControl]="fc"></mat-slider>
     <div fxLayout="column" fxLayoutAlign="start start" class="width-100">
-        <button *ngFor="let config of buttons" [ngStyle]="{'height': 'calc(100% / '+buttons.length+')', 'width': 'calc(20px + (100% - 20px) * ( '+config.cumulated+'/'+total+' ))'}"></button>
+        <button *ngFor="let config of buttons"
+                class="graph-button"
+                [ngStyle]="{'height': 'calc(100% / '+buttons.length+')', 'width': 'calc(20px + (100% - 20px) * ( '+config.cumulated+'/'+total+' ))'}"
+                [ngClass]="{'red-graph-button': config.state === 0, 'green-graph-button': config.state === 1, 'yellow-graph-button': config.state === 2}">
+        </button>
     </div>
 </div>

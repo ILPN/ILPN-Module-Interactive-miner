@@ -5,3 +5,30 @@
 .width-100 {
     width: 100%;
 }
+
+.graph-button {
+    border-style: solid;
+    border-width: 1px;
+    opacity: 0.7;
+    -webkit-transition: .1s;
+    transition: opacity .1s;
+}
+
+.graph-button:hover {
+    opacity: 1;
+}
+
+.red-graph-button {
+    background-color: LightCoral;
+    border-color: IndianRed;
+}
+
+.yellow-graph-button {
+    background-color: LemonChiffon;
+    border-color: Khaki;
+}
+
+.green-graph-button {
+    background-color: LightGreen;
+    border-color: LimeGreen;
+}
