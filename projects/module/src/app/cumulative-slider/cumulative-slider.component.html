@@ -1,6 +1,6 @@
 <div class="height-100" fxLayout="row" fxLayoutAlign="start stretch">
-    <mat-slider invert min="1" [max]="100" step="1" vertical class="height-100"></mat-slider>
+    <mat-slider invert min="0" [max]="buttons.length" step="1" vertical class="height-100"></mat-slider>
     <div fxLayout="column" fxLayoutAlign="start start" class="width-100">
-
+        <button *ngFor="let config of buttons" [ngStyle]="{'height': 'calc(100% / '+buttons.length+')', 'width': 'calc(20px + (100% - 20px) * ( '+config.cumulated+'/'+total+' ))'}"></button>
     </div>
 </div>
