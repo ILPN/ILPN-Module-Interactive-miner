@@ -7,10 +7,13 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {APP_BASE_HREF, PlatformLocation} from '@angular/common';
+import { CumulativeSliderComponent } from './cumulative-slider/cumulative-slider.component';
+import {MatSliderModule} from '@angular/material/slider';
 
 @NgModule({
     declarations: [
-        AppComponent
+        AppComponent,
+        CumulativeSliderComponent
     ],
     imports: [
         BrowserModule,
@@ -19,6 +22,7 @@ import {APP_BASE_HREF, PlatformLocation} from '@angular/common';
         ReactiveFormsModule,
         MatSlideToggleModule,
         BrowserAnimationsModule,
+        MatSliderModule,
     ],
     providers: [
         {
