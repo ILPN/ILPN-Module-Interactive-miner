@@ -12,7 +12,7 @@ import {
     Trace,
     XesLogParserService
 } from 'ilpn-components';
-import {Subscription} from 'rxjs';
+import {ReplaySubject, Subscription} from 'rxjs';
 import {FormControl} from '@angular/forms';
 import {SelectionChange, SelectionChangeType} from '../model/selection-change';
 
@@ -35,6 +35,7 @@ export class AppComponent extends LogCleaner implements OnDestroy {
     pos: Array<PartialOrderNetWithContainedTraces> = [];
 
     model: PetriNet | undefined;
+    model$: ReplaySubject<PetriNet | undefined>;
 
     fc: FormControl;
 
@@ -45,6 +46,7 @@ export class AppComponent extends LogCleaner implements OnDestroy {
                 private _serialisationService: PetriNetSerialisationService) {
         super();
         this.fc = new FormControl('');
+        this.model$ = new ReplaySubject<PetriNet | undefined>(1);
     }
 
     ngOnDestroy(): void {
@@ -113,6 +115,7 @@ export class AppComponent extends LogCleaner implements OnDestroy {
 
         if (indices.size === this._posInModel.size && Array.from(indices).every(i => this._posInModel.has(i))) {
             // the specification has not changed => the current model is still valid;
+            this.model$.next(this.model);
             return;
         }
 
@@ -121,6 +124,7 @@ export class AppComponent extends LogCleaner implements OnDestroy {
         }).subscribe(r => {
             this._posInModel = indices;
             this.model = r.net;
+            this.model$.next(this.model);
             this.fc.setValue(this._serialisationService.serialise(this.model));
         });
     }

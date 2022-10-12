@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnDestroy, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {
     LpoFireValidator,
     PartialOrderNetWithContainedTraces,
@@ -6,7 +6,7 @@ import {
     PetriNetToPartialOrderTransformerService
 } from 'ilpn-components';
 import {FormControl} from '@angular/forms';
-import {debounceTime, Subscription} from 'rxjs';
+import {debounceTime, Observable, Subscription} from 'rxjs';
 import {SelectionChange, SelectionChangeType} from '../../model/selection-change';
 
 
@@ -30,11 +30,12 @@ interface ButtonConfig {
     templateUrl: './cumulative-slider.component.html',
     styleUrls: ['./cumulative-slider.component.scss']
 })
-export class CumulativeSliderComponent implements OnDestroy {
+export class CumulativeSliderComponent implements OnInit, OnDestroy {
 
     private _fcSub: Subscription;
     private _changeSub: Subscription;
     private _radioSub: Subscription;
+    private _modelSub: Subscription | undefined;
     private _pos: Array<PartialOrderNetWithContainedTraces> = [];
     private _model: PetriNet | undefined;
 
@@ -44,6 +45,9 @@ export class CumulativeSliderComponent implements OnDestroy {
     public total = 0;
     public sliderFc: FormControl;
     public radioFc: FormControl;
+
+    @Input()
+    public model$: Observable<PetriNet | undefined> | undefined;
 
     @Output()
     public selectionUpdate: EventEmitter<SelectionChange>;
@@ -60,6 +64,26 @@ export class CumulativeSliderComponent implements OnDestroy {
         ).subscribe(i =>
             this.selectionUpdate.emit(new SelectionChange(SelectionChangeType.INDEX, i))
         );
+    }
+
+    ngOnInit(): void {
+        if (this.model$ === undefined) {
+            return;
+        }
+        this._modelSub = this.model$.subscribe(net => {
+            if (net === undefined || net.isEmpty()) {
+                this._model = undefined;
+                return;
+            }
+            this._model = net;
+
+            for (let i = this.sliderFc.value + 1; i < this._pos.length; i++) {
+                const button = this.buttons[i];
+                if (button.state !== ButtonState.FORCE_EXCLUDED && button.state !== ButtonState.FORCE_INCLUDED && this.firePO(net, this._pos[i].net)) {
+                    button.state = ButtonState.SUGGESTED;
+                }
+            }
+        });
     }
 
     ngOnDestroy(): void {
@@ -79,22 +103,6 @@ export class CumulativeSliderComponent implements OnDestroy {
         this._model = undefined;
         this.sliderFc.setValue(0);
         this.selectionUpdate.emit(new SelectionChange(SelectionChangeType.RESET, -1));
-    }
-
-    @Input()
-    set model(net: PetriNet | undefined) {
-        if (net === undefined || net.isEmpty()) {
-            this._model = undefined;
-            return;
-        }
-        this._model = net;
-
-        for (let i = this.sliderFc.value + 1; i < this._pos.length; i++) {
-            const button = this.buttons[i];
-            if (button.state !== ButtonState.FORCE_EXCLUDED && button.state !== ButtonState.FORCE_INCLUDED && this.firePO(net, this._pos[i].net)) {
-                button.state = ButtonState.SUGGESTED;
-            }
-        }
     }
 
     private generateButtonConfig() {
