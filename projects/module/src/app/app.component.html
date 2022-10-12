@@ -7,7 +7,9 @@
             <ilpn-file-upload [fileDisplay]="fdLog" descriptionText="Drop a XES log file here" (fileContent)="processUpload($event)"></ilpn-file-upload>
         </div>
         <div fxFlex>
-
+            <mat-form-field appearance="fill">
+                <textarea matInput [formControl]="fc"></textarea>
+            </mat-form-field>
         </div>
         <div class="content-side content-right" fxFlex="15">
             <app-cumulative-slider [pos]="pos" (selectedIndices)="updateModel($event)"></app-cumulative-slider>

@@ -9,6 +9,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {APP_BASE_HREF, PlatformLocation} from '@angular/common';
 import { CumulativeSliderComponent } from './cumulative-slider/cumulative-slider.component';
 import {MatSliderModule} from '@angular/material/slider';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
 
 @NgModule({
     declarations: [
@@ -23,6 +25,8 @@ import {MatSliderModule} from '@angular/material/slider';
         MatSlideToggleModule,
         BrowserAnimationsModule,
         MatSliderModule,
+        MatFormFieldModule,
+        MatInputModule,
     ],
     providers: [
         {

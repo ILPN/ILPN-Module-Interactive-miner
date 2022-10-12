@@ -13,6 +13,7 @@ import {
     XesLogParserService
 } from 'ilpn-components';
 import {Subscription} from 'rxjs';
+import {FormControl} from '@angular/forms';
 
 @Component({
     selector: 'app-root',
@@ -30,12 +31,15 @@ export class AppComponent extends LogCleaner implements OnDestroy {
 
     model: PetriNet | undefined;
 
+    fc: FormControl;
+
     constructor(private _logParser: XesLogParserService,
                 private _oracle: AlphaOracleService,
                 private _poTransformer: LogToPartialOrderTransformerService,
                 private _primeMiner: PrimeMinerService,
                 private _serialisationService: PetriNetSerialisationService) {
         super();
+        this.fc = new FormControl('');
     }
 
     ngOnDestroy(): void {
@@ -70,7 +74,7 @@ export class AppComponent extends LogCleaner implements OnDestroy {
             oneBoundRegions: true
         }).subscribe(r => {
             this.model = r.net;
-            console.log(this._serialisationService.serialise(this.model));
+            this.fc.setValue(this._serialisationService.serialise(this.model));
         });
     }
 }
