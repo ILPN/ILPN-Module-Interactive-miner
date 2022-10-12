@@ -8,15 +8,20 @@ import {
 import {FormControl} from '@angular/forms';
 import {debounceTime, Subscription} from 'rxjs';
 
+
 enum ButtonState {
     DESELECTED,
     SELECTED,
-    SUGGESTED
+    SUGGESTED,
+    FORCE_INCLUDED,
+    FORCE_EXCLUDED
 }
 
 interface ButtonConfig {
+    index: number;
     cumulated: number;
-    state: ButtonState
+    state: ButtonState;
+    selected: boolean;
 }
 
 @Component({
@@ -28,58 +33,72 @@ export class CumulativeSliderComponent implements OnDestroy {
 
     private _fcSub: Subscription;
     private _changeSub: Subscription;
+    private _radioSub: Subscription;
     private _pos: Array<PartialOrderNetWithContainedTraces> = [];
+    private _model: PetriNet | undefined;
+
+    public selectedButton: ButtonConfig | undefined;
 
     public buttons: Array<ButtonConfig> = [];
     public total = 0;
-    public fc: FormControl;
+    public sliderFc: FormControl;
+    public radioFc: FormControl;
 
     @Output()
     public selectedIndices: EventEmitter<number>;
 
     constructor(private _pnToPoTransformer: PetriNetToPartialOrderTransformerService) {
-        this.fc = new FormControl(0);
-        this._fcSub = this.fc.valueChanges.subscribe(() => this.processSliderChange());
+        this.sliderFc = new FormControl(0);
+        this._fcSub = this.sliderFc.valueChanges.subscribe(() => this.processSliderChange());
+        this.radioFc = new FormControl('n/a');
+        this.radioFc.disable();
+        this._radioSub = this.radioFc.valueChanges.subscribe(v => this.processRadioChange(v));
         this.selectedIndices = new EventEmitter<number>();
-        this._changeSub = this.fc.valueChanges.pipe(debounceTime(300)).subscribe(i => this.selectedIndices.emit(i));
+        this._changeSub = this.sliderFc.valueChanges.pipe(debounceTime(300)).subscribe(i => this.selectedIndices.emit(i));
     }
 
     ngOnDestroy(): void {
         this._fcSub.unsubscribe();
         this._changeSub.unsubscribe();
+        this._radioSub.unsubscribe();
     }
 
     @Input()
     set pos(pos: Array<PartialOrderNetWithContainedTraces>) {
+        this.selectedButton = undefined;
+        this.radioFc.setValue('n/a', {emitEvent: false});
+        this.radioFc.disable({emitEvent: false});
         this._pos = pos;
         this.total = this._pos.reduce((acc, po) => acc + po.net.frequency!, 0);
         this.generateButtonConfig();
-        this.fc.setValue(0);
+        this._model = undefined;
+        this.sliderFc.setValue(0);
     }
 
     @Input()
     set model(net: PetriNet | undefined) {
         if (net === undefined || net.isEmpty()) {
+            this._model = undefined;
             return;
         }
+        this._model = net;
 
-        for (let i = this.fc.value + 1; i < this._pos.length; i++) {
-            try {
-                const validator = new LpoFireValidator(net, this._pnToPoTransformer.transform(this._pos[i].net));
-                if (validator.validate().every(r => r.valid)) {
-                    this.buttons[i].state = ButtonState.SUGGESTED;
-                }
-            } catch (e) {
+        for (let i = this.sliderFc.value + 1; i < this._pos.length; i++) {
+            const button = this.buttons[i];
+            if (button.state !== ButtonState.FORCE_EXCLUDED && button.state !== ButtonState.FORCE_INCLUDED && this.firePO(net, this._pos[i].net)) {
+                button.state = ButtonState.SUGGESTED;
             }
         }
     }
 
     private generateButtonConfig() {
         let runningTotal = 0;
-        this.buttons = this._pos.map(po => {
+        this.buttons = this._pos.map((po, index) => {
             const c = {
+                index,
                 cumulated: runningTotal + po.net.frequency!,
                 state: ButtonState.DESELECTED,
+                selected: false,
             };
             runningTotal += po.net.frequency!;
             return c;
@@ -88,7 +107,67 @@ export class CumulativeSliderComponent implements OnDestroy {
 
     private processSliderChange() {
         for (let i = 0; i < this.buttons.length; i++) {
-            this.buttons[i].state = i <= this.fc.value ? ButtonState.SELECTED : ButtonState.DESELECTED;
+            const button = this.buttons[i];
+            if (button.state !== ButtonState.FORCE_EXCLUDED && button.state !== ButtonState.FORCE_INCLUDED) {
+                button.state = i <= this.sliderFc.value ? ButtonState.SELECTED : ButtonState.DESELECTED;
+            }
+        }
+    }
+
+    private processRadioChange(value: string) {
+        if (this.selectedButton === undefined) {
+            return;
+        }
+        switch (value) {
+            case 'include':
+                this.selectedButton.state = ButtonState.FORCE_INCLUDED;
+                return;
+            case 'exclude':
+                this.selectedButton.state = ButtonState.FORCE_EXCLUDED;
+                return;
+            case 'n/a':
+                if (this.selectedButton.index <= this.sliderFc.value) {
+                    this.selectedButton.state = ButtonState.SELECTED;
+                    return;
+                }
+                if (this.firePO(this._model, this._pos[this.selectedButton.index].net)) {
+                    this.selectedButton.state = ButtonState.SUGGESTED;
+                } else {
+                    this.selectedButton.state = ButtonState.DESELECTED;
+                }
+                return;
+        }
+    }
+
+    public buttonPressed(index: number) {
+        if (this.selectedButton !== undefined) {
+            this.selectedButton.selected = false;
+        }
+        this.selectedButton = this.buttons[index];
+        this.selectedButton.selected = true;
+        this.radioFc.enable({emitEvent: false});
+        switch (this.selectedButton.state) {
+            case ButtonState.FORCE_INCLUDED:
+                this.radioFc.setValue('include', {emitEvent: false});
+                break;
+            case ButtonState.FORCE_EXCLUDED:
+                this.radioFc.setValue('exclude', {emitEvent: false});
+                break;
+            default:
+                this.radioFc.setValue('n/a', {emitEvent: false});
+                break;
+        }
+    }
+
+    private firePO(net: PetriNet | undefined, po: PetriNet): boolean {
+        if (net === undefined) {
+            return false;
+        }
+        try {
+            const validator = new LpoFireValidator(net, this._pnToPoTransformer.transform(po));
+            return validator.validate().every(r => r.valid);
+        } catch (e) {
+            return false;
         }
     }
 }

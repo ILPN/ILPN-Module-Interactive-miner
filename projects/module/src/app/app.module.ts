@@ -11,6 +11,7 @@ import { CumulativeSliderComponent } from './cumulative-slider/cumulative-slider
 import {MatSliderModule} from '@angular/material/slider';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
+import {MatRadioModule} from '@angular/material/radio';
 
 @NgModule({
     declarations: [
@@ -27,6 +28,7 @@ import {MatInputModule} from '@angular/material/input';
         MatSliderModule,
         MatFormFieldModule,
         MatInputModule,
+        MatRadioModule,
     ],
     providers: [
         {
