@@ -7,8 +7,8 @@ import {
     LogToPartialOrderTransformerService,
     PartialOrderNetWithContainedTraces,
     PetriNet,
-    PetriNetRegionSynthesisService,
     PetriNetSerialisationService,
+    PrimeMinerService,
     Trace,
     XesLogParserService
 } from 'ilpn-components';
@@ -33,7 +33,7 @@ export class AppComponent extends LogCleaner implements OnDestroy {
     constructor(private _logParser: XesLogParserService,
                 private _oracle: AlphaOracleService,
                 private _poTransformer: LogToPartialOrderTransformerService,
-                private _synthesisService: PetriNetRegionSynthesisService,
+                private _primeMiner: PrimeMinerService,
                 private _serialisationService: PetriNetSerialisationService) {
         super();
     }
@@ -59,14 +59,17 @@ export class AppComponent extends LogCleaner implements OnDestroy {
 
     updateModel(selectedIndex: number) {
         const nets = [];
-        for (let i = 0; i <= selectedIndex; i++) {
-            nets.push(this.pos[i].net);
+        for (let i = 0; i <= selectedIndex && i < this.pos.length; i++) {
+            nets.push(this.pos[i]);
+        }
+        if (nets.length === 0) {
+            return;
         }
 
-        this._sub = this._synthesisService.synthesise(nets, {
+        this._sub = this._primeMiner.mine(nets, {
             oneBoundRegions: true
         }).subscribe(r => {
-            this.model = r.result;
+            this.model = r.net;
             console.log(this._serialisationService.serialise(this.model));
         });
     }
