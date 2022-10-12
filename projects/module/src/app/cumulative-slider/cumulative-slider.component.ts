@@ -7,6 +7,7 @@ import {
 } from 'ilpn-components';
 import {FormControl} from '@angular/forms';
 import {debounceTime, Subscription} from 'rxjs';
+import {SelectionChange, SelectionChangeType} from '../../model/selection-change';
 
 
 enum ButtonState {
@@ -45,7 +46,7 @@ export class CumulativeSliderComponent implements OnDestroy {
     public radioFc: FormControl;
 
     @Output()
-    public selectedIndices: EventEmitter<number>;
+    public selectionUpdate: EventEmitter<SelectionChange>;
 
     constructor(private _pnToPoTransformer: PetriNetToPartialOrderTransformerService) {
         this.sliderFc = new FormControl(0);
@@ -53,8 +54,12 @@ export class CumulativeSliderComponent implements OnDestroy {
         this.radioFc = new FormControl('n/a');
         this.radioFc.disable();
         this._radioSub = this.radioFc.valueChanges.subscribe(v => this.processRadioChange(v));
-        this.selectedIndices = new EventEmitter<number>();
-        this._changeSub = this.sliderFc.valueChanges.pipe(debounceTime(300)).subscribe(i => this.selectedIndices.emit(i));
+        this.selectionUpdate = new EventEmitter<SelectionChange>();
+        this._changeSub = this.sliderFc.valueChanges.pipe(
+            debounceTime(300)
+        ).subscribe(i =>
+            this.selectionUpdate.emit(new SelectionChange(SelectionChangeType.INDEX, i))
+        );
     }
 
     ngOnDestroy(): void {
@@ -73,6 +78,7 @@ export class CumulativeSliderComponent implements OnDestroy {
         this.generateButtonConfig();
         this._model = undefined;
         this.sliderFc.setValue(0);
+        this.selectionUpdate.emit(new SelectionChange(SelectionChangeType.RESET, -1));
     }
 
     @Input()
@@ -121,20 +127,22 @@ export class CumulativeSliderComponent implements OnDestroy {
         switch (value) {
             case 'include':
                 this.selectedButton.state = ButtonState.FORCE_INCLUDED;
+                this.selectionUpdate.emit(new SelectionChange(SelectionChangeType.WHITELIST_ADD, this.selectedButton.index));
                 return;
             case 'exclude':
                 this.selectedButton.state = ButtonState.FORCE_EXCLUDED;
+                this.selectionUpdate.emit(new SelectionChange(SelectionChangeType.BLACKLIST_ADD, this.selectedButton.index));
                 return;
             case 'n/a':
+                const oldState = this.selectedButton.state;
                 if (this.selectedButton.index <= this.sliderFc.value) {
                     this.selectedButton.state = ButtonState.SELECTED;
-                    return;
-                }
-                if (this.firePO(this._model, this._pos[this.selectedButton.index].net)) {
+                } else if (this.firePO(this._model, this._pos[this.selectedButton.index].net)) {
                     this.selectedButton.state = ButtonState.SUGGESTED;
                 } else {
                     this.selectedButton.state = ButtonState.DESELECTED;
                 }
+                this.selectionUpdate.emit(new SelectionChange(oldState === ButtonState.FORCE_INCLUDED ? SelectionChangeType.WHITELIST_REMOVE : SelectionChangeType.BLACKLIST_REMOVE, this.selectedButton.index));
                 return;
         }
     }

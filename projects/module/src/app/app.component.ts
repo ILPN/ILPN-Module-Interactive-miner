@@ -14,6 +14,7 @@ import {
 } from 'ilpn-components';
 import {Subscription} from 'rxjs';
 import {FormControl} from '@angular/forms';
+import {SelectionChange, SelectionChangeType} from '../model/selection-change';
 
 @Component({
     selector: 'app-root',
@@ -23,6 +24,10 @@ import {FormControl} from '@angular/forms';
 export class AppComponent extends LogCleaner implements OnDestroy {
 
     private _sub: Subscription | undefined;
+    private _selectedIndex = -1;
+    private _whitelist = new Set<number>();
+    private _blacklist = new Set<number>();
+    private _posInModel = new Set<number>();
 
     fdLog = FD_LOG;
 
@@ -61,20 +66,69 @@ export class AppComponent extends LogCleaner implements OnDestroy {
         }
     }
 
-    updateModel(selectedIndex: number) {
+    updateSelection(update: SelectionChange) {
+        switch (update.type) {
+            case SelectionChangeType.RESET:
+                this.resetState();
+                return;
+            case SelectionChangeType.INDEX:
+                this._selectedIndex = update.value;
+                break;
+            case SelectionChangeType.WHITELIST_ADD:
+                this._whitelist.add(update.value);
+                break;
+            case SelectionChangeType.WHITELIST_REMOVE:
+                this._whitelist.delete(update.value);
+                break;
+            case SelectionChangeType.BLACKLIST_ADD:
+                this._blacklist.add(update.value);
+                break;
+            case SelectionChangeType.BLACKLIST_REMOVE:
+                this._blacklist.delete(update.value);
+                break;
+        }
+        this.updateModel();
+    }
+
+    updateModel() {
         const nets = [];
-        for (let i = 0; i <= selectedIndex && i < this.pos.length; i++) {
+        const indices = new Set<number>();
+        for (let i = 0; i <= this._selectedIndex && i < this.pos.length; i++) {
+            if (this._blacklist.has(i)) {
+                continue;
+            }
             nets.push(this.pos[i]);
+            indices.add(i);
+        }
+        for (const i of this._whitelist) {
+            if (indices.has(i)) {
+                continue;
+            }
+            nets.push(this.pos[i]);
+            indices.add(i);
         }
         if (nets.length === 0) {
+            return;
+        }
+
+        if (indices.size === this._posInModel.size && Array.from(indices).every(i => this._posInModel.has(i))) {
+            // the specification has not changed => the current model is still valid;
             return;
         }
 
         this._sub = this._primeMiner.mine(nets, {
             oneBoundRegions: true
         }).subscribe(r => {
+            this._posInModel = indices;
             this.model = r.net;
             this.fc.setValue(this._serialisationService.serialise(this.model));
         });
+    }
+
+    private resetState() {
+        this._selectedIndex = -1;
+        this._whitelist.clear();
+        this._blacklist.clear();
+        this._posInModel.clear();
     }
 }
