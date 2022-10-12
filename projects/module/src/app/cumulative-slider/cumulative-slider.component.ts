@@ -1,5 +1,10 @@
 import {Component, EventEmitter, Input, OnDestroy, Output} from '@angular/core';
-import {PartialOrderNetWithContainedTraces} from 'ilpn-components';
+import {
+    LpoFireValidator,
+    PartialOrderNetWithContainedTraces,
+    PetriNet,
+    PetriNetToPartialOrderTransformerService
+} from 'ilpn-components';
 import {FormControl} from '@angular/forms';
 import {debounceTime, Subscription} from 'rxjs';
 
@@ -32,7 +37,7 @@ export class CumulativeSliderComponent implements OnDestroy {
     @Output()
     public selectedIndices: EventEmitter<number>;
 
-    constructor() {
+    constructor(private _pnToPoTransformer: PetriNetToPartialOrderTransformerService) {
         this.fc = new FormControl(0);
         this._fcSub = this.fc.valueChanges.subscribe(() => this.processSliderChange());
         this.selectedIndices = new EventEmitter<number>();
@@ -50,6 +55,23 @@ export class CumulativeSliderComponent implements OnDestroy {
         this.total = this._pos.reduce((acc, po) => acc + po.net.frequency!, 0);
         this.generateButtonConfig();
         this.fc.setValue(0);
+    }
+
+    @Input()
+    set model(net: PetriNet | undefined) {
+        if (net === undefined || net.isEmpty()) {
+            return;
+        }
+
+        for (let i = this.fc.value + 1; i < this._pos.length; i++) {
+            try {
+                const validator = new LpoFireValidator(net, this._pnToPoTransformer.transform(this._pos[i].net));
+                if (validator.validate().every(r => r.valid)) {
+                    this.buttons[i].state = ButtonState.SUGGESTED;
+                }
+            } catch (e) {
+            }
+        }
     }
 
     private generateButtonConfig() {
