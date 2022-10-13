@@ -3,6 +3,7 @@ import {
     AlphaOracleService,
     DropFile,
     FD_LOG,
+    FD_PETRI_NET,
     LogCleaner,
     LogToPartialOrderTransformerService,
     PartialOrderNetWithContainedTraces,
@@ -12,8 +13,7 @@ import {
     Trace,
     XesLogParserService
 } from 'ilpn-components';
-import {ReplaySubject, Subscription} from 'rxjs';
-import {FormControl} from '@angular/forms';
+import {BehaviorSubject, Subscription} from 'rxjs';
 import {SelectionChange, SelectionChangeType} from '../model/selection-change';
 
 @Component({
@@ -23,21 +23,21 @@ import {SelectionChange, SelectionChangeType} from '../model/selection-change';
 })
 export class AppComponent extends LogCleaner implements OnDestroy {
 
-    private _sub: Subscription | undefined;
+    private _minerSub: Subscription | undefined;
+    private _modelSub: Subscription;
     private _selectedIndex = -1;
     private _whitelist = new Set<number>();
     private _blacklist = new Set<number>();
     private _posInModel = new Set<number>();
 
     fdLog = FD_LOG;
+    fdPN = FD_PETRI_NET;
 
     log: Array<Trace> | undefined;
     pos: Array<PartialOrderNetWithContainedTraces> = [];
 
-    model: PetriNet | undefined;
-    model$: ReplaySubject<PetriNet | undefined>;
-
-    fc: FormControl;
+    model$: BehaviorSubject<PetriNet>;
+    file: DropFile | undefined;
 
     constructor(private _logParser: XesLogParserService,
                 private _oracle: AlphaOracleService,
@@ -45,14 +45,21 @@ export class AppComponent extends LogCleaner implements OnDestroy {
                 private _primeMiner: PrimeMinerService,
                 private _serialisationService: PetriNetSerialisationService) {
         super();
-        this.fc = new FormControl('');
-        this.model$ = new ReplaySubject<PetriNet | undefined>(1);
+        this.model$ = new BehaviorSubject<PetriNet>(new PetriNet());
+        this._modelSub = this.model$.subscribe(net => {
+            if (net.isEmpty()) {
+                this.file = undefined;
+            } else {
+                this.file = new DropFile('model.pn', this._serialisationService.serialise(net));
+            }
+        })
     }
 
     ngOnDestroy(): void {
-        if (this._sub) {
-            this._sub.unsubscribe();
+        if (this._minerSub) {
+            this._minerSub.unsubscribe();
         }
+        this._modelSub.unsubscribe();
     }
 
     processUpload(files: Array<DropFile>) {
@@ -110,25 +117,22 @@ export class AppComponent extends LogCleaner implements OnDestroy {
             indices.add(i);
         }
         if (nets.length === 0) {
-            this.model = new PetriNet();
-            this.model$.next(this.model);
+            this.model$.next(new PetriNet());
             return;
         }
 
         if (indices.size === this._posInModel.size && Array.from(indices).every(i => this._posInModel.has(i))) {
             // the specification has not changed => the current model is still valid;
-            this.model$.next(this.model);
+            this.model$.next(this.model$.value);
             return;
         }
 
-        this._sub = this._primeMiner.mine(nets, {
+        this._minerSub = this._primeMiner.mine(nets, {
             skipConnectivityCheck: true,
             oneBoundRegions: true
         }).subscribe(r => {
             this._posInModel = indices;
-            this.model = r.net;
-            this.model$.next(this.model);
-            this.fc.setValue(this._serialisationService.serialise(this.model));
+            this.model$.next(r.net);
         });
     }
 

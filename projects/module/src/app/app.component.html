@@ -5,11 +5,10 @@
     <div flexLayout="row" flexLayoutAlign="start stretch" class="content-wrapper">
         <div flexLayout="column" flexLayoutAlign="start stretch" class="content-side content-left" fxFlex="15">
             <ilpn-file-upload [fileDisplay]="fdLog" descriptionText="Drop a XES log file here" (fileContent)="processUpload($event)"></ilpn-file-upload>
+            <ilpn-file-download [fileDisplay]="fdPN" descriptionText="Download current model" [disabled]="file === undefined" [files]="file"></ilpn-file-download>
         </div>
         <div fxFlex>
-            <mat-form-field appearance="fill">
-                <textarea matInput [formControl]="fc"></textarea>
-            </mat-form-field>
+
         </div>
         <div class="content-side content-right" fxFlex="15">
             <app-cumulative-slider [pos]="pos" [model$]="model$" (selectionUpdate)="updateSelection($event)"></app-cumulative-slider>
