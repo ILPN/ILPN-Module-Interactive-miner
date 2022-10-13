@@ -8,7 +8,7 @@
             <ilpn-file-download [fileDisplay]="fdPN" descriptionText="Download current model" [disabled]="file === undefined" [files]="file"></ilpn-file-download>
         </div>
         <div fxFlex>
-
+            <ilpn-pn-display [petriNet$]="model$"></ilpn-pn-display>
         </div>
         <div class="content-side content-right" fxFlex="15">
             <app-cumulative-slider [pos]="pos" [model$]="model$" (selectionUpdate)="updateSelection($event)"></app-cumulative-slider>

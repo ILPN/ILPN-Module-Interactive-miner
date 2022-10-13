@@ -16,6 +16,7 @@ import {
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {SelectionChange, SelectionChangeType} from '../model/selection-change';
 
+
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
