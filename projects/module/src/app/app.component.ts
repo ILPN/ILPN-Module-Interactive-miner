@@ -110,6 +110,8 @@ export class AppComponent extends LogCleaner implements OnDestroy {
             indices.add(i);
         }
         if (nets.length === 0) {
+            this.model = new PetriNet();
+            this.model$.next(this.model);
             return;
         }
 

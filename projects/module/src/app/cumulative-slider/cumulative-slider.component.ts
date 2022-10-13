@@ -71,7 +71,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
             return;
         }
         this._modelSub = this.model$.subscribe(net => {
-            if (net === undefined || net.isEmpty()) {
+            if (net === undefined) {
                 this._model = undefined;
                 return;
             }
@@ -79,8 +79,13 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
 
             for (let i = this.sliderFc.value + 1; i < this._pos.length; i++) {
                 const button = this.buttons[i];
-                if (button.state !== ButtonState.FORCE_EXCLUDED && button.state !== ButtonState.FORCE_INCLUDED && this.firePO(net, this._pos[i].net)) {
+                if (button.state === ButtonState.FORCE_EXCLUDED || button.state === ButtonState.FORCE_INCLUDED) {
+                    continue;
+                }
+                if (this.firePO(net, this._pos[i].net)) {
                     button.state = ButtonState.SUGGESTED;
+                } else {
+                    button.state = ButtonState.DESELECTED;
                 }
             }
         });
