@@ -122,6 +122,7 @@ export class AppComponent extends LogCleaner implements OnDestroy {
         }
 
         this._sub = this._primeMiner.mine(nets, {
+            skipConnectivityCheck: true,
             oneBoundRegions: true
         }).subscribe(r => {
             this._posInModel = indices;
