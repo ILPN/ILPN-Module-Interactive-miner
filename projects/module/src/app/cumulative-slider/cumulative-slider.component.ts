@@ -40,6 +40,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
     public maximum = 0;
     public cumulative = true;
     public fcCumulative: FormControl;
+    public fcSlider: FormControl;
 
     @Input()
     public model$: Observable<PetriNet | undefined> | undefined;
@@ -47,12 +48,17 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
     @Output()
     public selectionUpdate: EventEmitter<SelectionChange>;
 
+    @Output()
+    public sizeChanged: EventEmitter<number>;
+
     constructor(private _pnToPoTransformer: PetriNetToPartialOrderTransformerService) {
         this.selectionUpdate = new EventEmitter<SelectionChange>();
+        this.sizeChanged = new EventEmitter<number>();
         this.fcCumulative = new FormControl(this.cumulative);
         this._fcSub = this.fcCumulative.valueChanges.subscribe(v => {
             this.cumulative = v;
         });
+        this.fcSlider = new FormControl(0);
     }
 
     ngOnInit(): void {
@@ -95,6 +101,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
         this.generateButtonConfig();
         this._model = undefined;
         this.selectionUpdate.emit(new SelectionChange(SelectionChangeType.RESET, -1));
+        this.sizeChanged.emit(20 * this.buttons.length + 27);
     }
 
     private generateButtonConfig() {

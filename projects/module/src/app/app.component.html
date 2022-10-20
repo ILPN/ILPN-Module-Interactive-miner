@@ -2,17 +2,20 @@
     <h2>TODO title</h2>
     <hr>
 
-    <div flexLayout="row" flexLayoutAlign="start stretch" class="content-wrapper">
+    <div flexLayout="row" flexLayoutAlign="start start" class="content-wrapper">
         <div flexLayout="column" flexLayoutAlign="start stretch" class="content-side content-left" fxFlex="15">
             <ilpn-file-upload [fileDisplay]="fdLog" descriptionText="Drop a XES log file here" (fileContent)="processUpload($event)"></ilpn-file-upload>
             <ilpn-file-download [fileDisplay]="fdPN" descriptionText="Download current model" [disabled]="file === undefined" [files]="file"></ilpn-file-download>
         </div>
-        <div fxFlex>
-            <ilpn-pn-display [petriNet$]="model$"></ilpn-pn-display>
-        </div>
-        <div class="content-side content-right" fxFlex="15">
-            <app-cumulative-slider [pos]="pos" [model$]="model$" (selectionUpdate)="updateSelection($event)"></app-cumulative-slider>
-        </div>
+
+        <ilpn-pn-display fxFlex="70" [petriNet$]="model$" [height]="svgHeight" [ngStyle]="{height: svgHeight}"></ilpn-pn-display>
+
+        <app-cumulative-slider class="content-side content-right" fxFlex="15"
+                               [pos]="pos"
+                               [model$]="model$"
+                               (selectionUpdate)="updateSelection($event)"
+                               (sizeChanged)="svgSizeChange($event)">
+        </app-cumulative-slider>
     </div>
 
 </ilpn-page-layout>

@@ -38,6 +38,8 @@ export class AppComponent extends LogCleaner implements OnDestroy {
     model$: BehaviorSubject<PetriNet>;
     file: DropFile | undefined;
 
+    svgHeight = '800px';
+
     constructor(private _logParser: XesLogParserService,
                 private _oracle: AlphaOracleService,
                 private _poTransformer: LogToPartialOrderTransformerService,
@@ -117,5 +119,13 @@ export class AppComponent extends LogCleaner implements OnDestroy {
     private resetState() {
         this._selectedPoIndices.clear();
         this._posInModel.clear();
+    }
+
+    svgSizeChange(newHeight: number) {
+        if (newHeight < 800) {
+            this.svgHeight = '800px';
+        } else {
+            this.svgHeight = `${newHeight}px`;
+        }
     }
 }
