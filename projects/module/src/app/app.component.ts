@@ -14,7 +14,6 @@ import {
     XesLogParserService
 } from 'ilpn-components';
 import {BehaviorSubject, Subscription} from 'rxjs';
-import {SelectionChange, SelectionChangeType} from '../model/selection-change';
 
 
 @Component({
@@ -26,7 +25,6 @@ export class AppComponent extends LogCleaner implements OnDestroy {
 
     private _minerSub: Subscription | undefined;
     private _modelSub: Subscription;
-    private _selectedPoIndices = new Set<number>();
     private _posInModel = new Set<number>();
 
     fdLog = FD_LOG;
@@ -76,24 +74,9 @@ export class AppComponent extends LogCleaner implements OnDestroy {
         }
     }
 
-    updateSelection(update: SelectionChange) {
-        switch (update.type) {
-            case SelectionChangeType.RESET:
-                this.resetState();
-                return;
-            case SelectionChangeType.ADD:
-                this._selectedPoIndices.add(update.value);
-                break;
-            case SelectionChangeType.REMOVE:
-                this._selectedPoIndices.delete(update.value);
-                break;
-        }
-        this.updateModel();
-    }
-
-    updateModel() {
+    updateModel(selectedIndices: Set<number>) {
         const nets = [];
-        for (const i of Array.from(this._selectedPoIndices).sort()) {
+        for (const i of Array.from(selectedIndices).sort()) {
             nets.push(this.pos[i]);
         }
         if (nets.length === 0) {
@@ -101,7 +84,7 @@ export class AppComponent extends LogCleaner implements OnDestroy {
             return;
         }
 
-        if (this._selectedPoIndices.size === this._posInModel.size && Array.from(this._selectedPoIndices).every(i => this._posInModel.has(i))) {
+        if (selectedIndices.size === this._posInModel.size && Array.from(selectedIndices).every(i => this._posInModel.has(i))) {
             // the specification has not changed => the current model is still valid;
             this.model$.next(this.model$.value);
             return;
@@ -111,14 +94,9 @@ export class AppComponent extends LogCleaner implements OnDestroy {
             skipConnectivityCheck: true,
             oneBoundRegions: true
         }).subscribe(r => {
-            this._posInModel = new Set<number>(this._selectedPoIndices);
+            this._posInModel = selectedIndices;
             this.model$.next(r.net);
         });
-    }
-
-    private resetState() {
-        this._selectedPoIndices.clear();
-        this._posInModel.clear();
     }
 
     svgSizeChange(newHeight: number) {

@@ -1,21 +1,19 @@
-<div fxLayout="column" fxLayoutAlign="start stretch" class="height-100 width-100 wrapper">
+<div fxLayout="column" fxLayoutAlign="start stretch" class="height-100 width-100">
     <div fxLayout="row" fxLayoutAlign="end center" class="detail-area">
         <span>absolute</span>
         <mat-slide-toggle [formControl]="fcCumulative" class="side-margin"></mat-slide-toggle>
         <span>cumulative</span>
     </div>
-<!--    <div fxLayout="row" fxLayoutAlign="start stretch" class="width-100 height-100">-->
-<!--        <input type="range" class="height-100" orient="vertical" *ngIf="buttons.length > 0">-->
-<!--        <div fxLayout="column" fxLayoutAlign="start start" class="width-100 height-100 overflow-scroll">-->
-            <div fxLayout="row" fxLayoutAlign="start stretch" class="width-100"
-                 *ngFor="let config of buttons; let i = index">
-                <input type="checkbox" (change)="processCheckboxChange(i, $event)">
-                <div class="graph-bar height-100"
-                     [ngStyle]="{'width': 'calc(10px + (100% - 10px) * ( '+ (cumulative ? config.cumulated+'/'+total : config.absolute+'/'+maximum)+' ))'}"
-                     [ngClass]="{'red-graph-button': config.state === 0, 'green-graph-button': config.state !== 0}">
-                    <span>{{cumulative ? config.cumulated : config.absolute}}</span>
-                </div>
-            </div>
-<!--        </div>-->
-<!--    </div>-->
+    <div fxLayout="row" fxLayoutAlign="start stretch" class="width-100 height-100">
+        <mat-slider invert min="0" [max]="buttons.length - 1" step="1" vertical class="height-100"
+                    [formControl]="fcSlider"></mat-slider>
+        <div fxLayout="column" fxLayoutAlign="start start" class="width-100 height-100 overflow-scroll">
+            <app-graph-bar *ngFor="let config of buttons; let i = index" class="width-100"
+                           [config]="config"
+                           [cumulative]="cumulative"
+                           [total]="total"
+                           [maximum]="maximum"
+                           (selected)="processCheckboxChange(i, $event)"></app-graph-bar>
+        </div>
+    </div>
 </div>

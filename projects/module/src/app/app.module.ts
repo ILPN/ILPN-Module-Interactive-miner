@@ -7,18 +7,20 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {APP_BASE_HREF, PlatformLocation} from '@angular/common';
-import { CumulativeSliderComponent } from './cumulative-slider/cumulative-slider.component';
+import {CumulativeSliderComponent} from './cumulative-slider/cumulative-slider.component';
 import {MatSliderModule} from '@angular/material/slider';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {GraphBarComponent} from './cumulative-slider/graph-bar/graph-bar.component';
 
 @NgModule({
     declarations: [
         AppComponent,
-        CumulativeSliderComponent
+        CumulativeSliderComponent,
+        GraphBarComponent
     ],
     imports: [
         BrowserModule,
