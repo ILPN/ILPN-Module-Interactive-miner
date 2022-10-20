@@ -13,25 +13,27 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 @NgModule({
     declarations: [
         AppComponent,
         CumulativeSliderComponent
     ],
-	imports: [
-		BrowserModule,
-		IlpnComponentsModule,
-		FlexLayoutModule,
-		ReactiveFormsModule,
-		MatSlideToggleModule,
-		BrowserAnimationsModule,
-		MatSliderModule,
-		MatFormFieldModule,
-		MatInputModule,
-		MatRadioModule,
-		MatCheckboxModule,
-	],
+    imports: [
+        BrowserModule,
+        IlpnComponentsModule,
+        FlexLayoutModule,
+        ReactiveFormsModule,
+        MatSlideToggleModule,
+        BrowserAnimationsModule,
+        MatSliderModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatRadioModule,
+        MatCheckboxModule,
+        MatButtonToggleModule,
+    ],
     providers: [
         {
             provide: APP_BASE_HREF,

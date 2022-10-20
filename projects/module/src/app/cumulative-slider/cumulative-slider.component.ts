@@ -5,9 +5,9 @@ import {
     PetriNet,
     PetriNetToPartialOrderTransformerService
 } from 'ilpn-components';
-import {FormControl} from '@angular/forms';
-import {debounceTime, Observable, Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {SelectionChange, SelectionChangeType} from '../../model/selection-change';
+import {FormControl} from '@angular/forms';
 
 
 enum ButtonState {
@@ -30,12 +30,16 @@ interface ButtonConfig {
 })
 export class CumulativeSliderComponent implements OnInit, OnDestroy {
 
+    private _fcSub: Subscription;
     private _modelSub: Subscription | undefined;
     private _pos: Array<PartialOrderNetWithContainedTraces> = [];
     private _model: PetriNet | undefined;
 
     public buttons: Array<ButtonConfig> = [];
     public total = 0;
+    public maximum = 0;
+    public cumulative = true;
+    public fcCumulative: FormControl;
 
     @Input()
     public model$: Observable<PetriNet | undefined> | undefined;
@@ -45,6 +49,10 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
 
     constructor(private _pnToPoTransformer: PetriNetToPartialOrderTransformerService) {
         this.selectionUpdate = new EventEmitter<SelectionChange>();
+        this.fcCumulative = new FormControl(this.cumulative);
+        this._fcSub = this.fcCumulative.valueChanges.subscribe(v => {
+            this.cumulative = v;
+        });
     }
 
     ngOnInit(): void {
@@ -76,12 +84,14 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
         if (this._modelSub !== undefined) {
             this._modelSub.unsubscribe();
         }
+        this._fcSub.unsubscribe();
     }
 
     @Input()
     set pos(pos: Array<PartialOrderNetWithContainedTraces>) {
         this._pos = pos;
         this.total = this._pos.reduce((acc, po) => acc + po.net.frequency!, 0);
+        this.maximum = this._pos.reduce((max, po) => max >= po.net.frequency! ? max : po.net.frequency!, 0);
         this.generateButtonConfig();
         this._model = undefined;
         this.selectionUpdate.emit(new SelectionChange(SelectionChangeType.RESET, -1));

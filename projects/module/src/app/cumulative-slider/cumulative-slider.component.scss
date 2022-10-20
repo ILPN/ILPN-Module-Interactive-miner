@@ -7,7 +7,7 @@
 }
 
 .detail-area {
-    border-top-style: dotted;
+    border-bottom-style: dotted;
     border-color: #d3d3d3;
 }
 
@@ -21,11 +21,6 @@
     border-color: IndianRed;
 }
 
-.yellow-graph-button {
-    background-color: Gold;
-    border-color: GoldenRod;
-}
-
 .green-graph-button {
     background-color: LightGreen;
     border-color: LimeGreen;
@@ -37,4 +32,9 @@
 
 .overflow-scroll {
     overflow-y: auto;
+}
+
+.side-margin {
+    margin-left: 4px;
+    margin-right: 4px;
 }
