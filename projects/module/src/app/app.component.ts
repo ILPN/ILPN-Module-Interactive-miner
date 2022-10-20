@@ -26,9 +26,7 @@ export class AppComponent extends LogCleaner implements OnDestroy {
 
     private _minerSub: Subscription | undefined;
     private _modelSub: Subscription;
-    private _selectedIndex = -1;
-    private _whitelist = new Set<number>();
-    private _blacklist = new Set<number>();
+    private _selectedPoIndices = new Set<number>();
     private _posInModel = new Set<number>();
 
     fdLog = FD_LOG;
@@ -81,20 +79,11 @@ export class AppComponent extends LogCleaner implements OnDestroy {
             case SelectionChangeType.RESET:
                 this.resetState();
                 return;
-            case SelectionChangeType.INDEX:
-                this._selectedIndex = update.value;
+            case SelectionChangeType.ADD:
+                this._selectedPoIndices.add(update.value);
                 break;
-            case SelectionChangeType.WHITELIST_ADD:
-                this._whitelist.add(update.value);
-                break;
-            case SelectionChangeType.WHITELIST_REMOVE:
-                this._whitelist.delete(update.value);
-                break;
-            case SelectionChangeType.BLACKLIST_ADD:
-                this._blacklist.add(update.value);
-                break;
-            case SelectionChangeType.BLACKLIST_REMOVE:
-                this._blacklist.delete(update.value);
+            case SelectionChangeType.REMOVE:
+                this._selectedPoIndices.delete(update.value);
                 break;
         }
         this.updateModel();
@@ -102,27 +91,15 @@ export class AppComponent extends LogCleaner implements OnDestroy {
 
     updateModel() {
         const nets = [];
-        const indices = new Set<number>();
-        for (let i = 0; i <= this._selectedIndex && i < this.pos.length; i++) {
-            if (this._blacklist.has(i)) {
-                continue;
-            }
+        for (const i of Array.from(this._selectedPoIndices).sort()) {
             nets.push(this.pos[i]);
-            indices.add(i);
-        }
-        for (const i of this._whitelist) {
-            if (indices.has(i)) {
-                continue;
-            }
-            nets.push(this.pos[i]);
-            indices.add(i);
         }
         if (nets.length === 0) {
             this.model$.next(new PetriNet());
             return;
         }
 
-        if (indices.size === this._posInModel.size && Array.from(indices).every(i => this._posInModel.has(i))) {
+        if (this._selectedPoIndices.size === this._posInModel.size && Array.from(this._selectedPoIndices).every(i => this._posInModel.has(i))) {
             // the specification has not changed => the current model is still valid;
             this.model$.next(this.model$.value);
             return;
@@ -132,15 +109,13 @@ export class AppComponent extends LogCleaner implements OnDestroy {
             skipConnectivityCheck: true,
             oneBoundRegions: true
         }).subscribe(r => {
-            this._posInModel = indices;
+            this._posInModel = new Set<number>(this._selectedPoIndices);
             this.model$.next(r.net);
         });
     }
 
     private resetState() {
-        this._selectedIndex = -1;
-        this._whitelist.clear();
-        this._blacklist.clear();
+        this._selectedPoIndices.clear();
         this._posInModel.clear();
     }
 }

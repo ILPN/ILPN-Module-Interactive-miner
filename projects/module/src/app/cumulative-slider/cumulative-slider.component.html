@@ -1,21 +1,11 @@
-<div class="height-100" fxLayout="column" fxLayoutAlign="start stretch">
-    <div fxLayout="row" fxLayoutAlign="start stretch" fxFlex>
-        <mat-slider invert min="0" [max]="buttons.length - 1" step="1" vertical class="height-100"
-                    [formControl]="sliderFc"></mat-slider>
-        <div fxLayout="column" fxLayoutAlign="start start" class="width-100">
-            <button *ngFor="let config of buttons; let i = index"
-                    class="graph-button"
-                    (click)="buttonPressed(i)"
-                    [ngStyle]="{'height': 'calc(100% / '+buttons.length+')', 'width': 'calc(20px + (100% - 20px) * ( '+config.cumulated+'/'+total+' ))'}"
-                    [ngClass]="{'red-graph-button': config.state === 0, 'green-graph-button': config.state === 1, 'yellow-graph-button': config.state === 2, 'blue-graph-button': config.state === 3, 'black-graph-button': config.state === 4, 'selected': config.selected}">
-            </button>
+<div fxLayout="column" fxLayoutAlign="start start" class="width-100 height-100 overflow-scroll">
+    <div fxLayout="row" fxLayoutAlign="start stretch" class="width-100"
+         *ngFor="let config of buttons; let i = index">
+        <input type="checkbox" (change)="processCheckboxChange(i, $event)">
+        <div class="graph-bar height-100"
+             [ngStyle]="{'width': 'calc(20px + (100% - 20px) * ( '+config.cumulated+'/'+total+' ))'}"
+             [ngClass]="{'red-graph-button': config.state === 0, 'green-graph-button': config.state === 1, 'yellow-graph-button': config.state === 2}">
+            <span>{{config.cumulated}}</span>
         </div>
-    </div>
-    <div class="detail-area">
-        <mat-radio-group [formControl]="radioFc" fxLayout="row" fxLayoutAlign="space-between center" class="radio-margin">
-            <mat-radio-button value="include">include</mat-radio-button>
-            <mat-radio-button value="n/a">n/a</mat-radio-button>
-            <mat-radio-button value="exclude">exclude</mat-radio-button>
-        </mat-radio-group>
     </div>
 </div>

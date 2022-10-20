@@ -11,24 +11,9 @@
     border-color: #d3d3d3;
 }
 
-.radio-margin {
-    margin: 4px;
-}
-
-.graph-button {
+.graph-bar {
     border-style: solid;
     border-width: 1px;
-    opacity: 0.6;
-    -webkit-transition: .1s;
-    transition: opacity .1s;
-}
-
-.graph-button:hover {
-    opacity: 0.9;
-}
-
-.selected {
-    opacity: 1 !important;
 }
 
 .red-graph-button {
@@ -46,12 +31,10 @@
     border-color: LimeGreen;
 }
 
-.blue-graph-button {
-    background-color: LightSkyBlue;
-    border-color: CornflowerBlue;
+.checkbox-margin {
+    margin: 2px;
 }
 
-.black-graph-button {
-    background-color: DimGray;
-    border-color: Black;
+.overflow-scroll {
+    overflow-y: auto;
 }

@@ -1,9 +1,6 @@
 export enum SelectionChangeType {
-    INDEX,
-    WHITELIST_ADD,
-    WHITELIST_REMOVE,
-    BLACKLIST_ADD,
-    BLACKLIST_REMOVE,
+    ADD,
+    REMOVE,
     RESET
 }
 
