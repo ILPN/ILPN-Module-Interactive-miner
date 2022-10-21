@@ -80,6 +80,7 @@ export class AppComponent extends LogCleaner implements OnDestroy {
             nets.push(this.pos[i]);
         }
         if (nets.length === 0) {
+            this._posInModel.clear();
             this.model$.next(new PetriNet());
             return;
         }
