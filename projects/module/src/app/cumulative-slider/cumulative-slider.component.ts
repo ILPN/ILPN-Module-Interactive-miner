@@ -55,11 +55,13 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
             if (i > this._oldSliderValue) {
                 for (let j = this._oldSliderValue + 1; j <= i; j++) {
                     this.buttons[j].fc.setValue(true);
+                    this.buttons[j].state = ButtonState.SELECTED;
                     this._selected.add(j);
                 }
             } else {
                 for (let j = i + 1; j <= this._oldSliderValue; j++) {
                     this.buttons[j].fc.setValue(false);
+                    this.buttons[j].state = ButtonState.DESELECTED;
                     this._selected.delete(j);
                 }
             }
@@ -136,8 +138,10 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
     public processCheckboxChange(index: number, checked: boolean) {
         if (checked) {
             this._selected.add(index);
+            this.buttons[index].state = ButtonState.SELECTED;
         } else {
             this._selected.delete(index);
+            this.buttons[index].state = ButtonState.DESELECTED;
         }
         this.selectionUpdate.emit(new Set(this._selected));
     }
