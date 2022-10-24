@@ -6,10 +6,24 @@
     width: 100%;
 }
 
+.checkbox {
+    height: 12px;
+}
+
 .graph-bar {
     border-style: solid;
     border-width: 1px;
     height: 18px;
+    padding: 0;
+    opacity: .7;
+}
+
+.graph-bar:hover {
+    opacity: 1;
+}
+
+.selected {
+    opacity: .95;
 }
 
 .red-graph-button {

@@ -16,9 +16,11 @@ export class GraphBarComponent {
     @Input() maximum: number = 0;
 
     @Output() selected: EventEmitter<boolean>;
+    @Output() clicked: EventEmitter<void>;
 
     constructor() {
         this.selected = new EventEmitter<boolean>();
+        this.clicked = new EventEmitter<void>();
     }
 
     emitValue(event: Event) {
@@ -27,6 +29,12 @@ export class GraphBarComponent {
             return;
         }
         this.selected.emit(checkbox.checked);
+    }
+
+    emitClick(event: Event) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.clicked.emit();
     }
 
 }

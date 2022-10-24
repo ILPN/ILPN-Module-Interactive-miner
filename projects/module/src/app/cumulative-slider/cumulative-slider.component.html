@@ -1,4 +1,4 @@
-<div fxLayout="column" fxLayoutAlign="start stretch" class="height-100 width-100">
+<div fxLayout="column" fxLayoutAlign="start stretch" class="height-100 width-100" (click)="cancelSelection()">
     <div fxLayout="row" fxLayoutAlign="end center" class="detail-area">
         <span>absolute</span>
         <mat-slide-toggle [formControl]="fcCumulative" class="side-margin"></mat-slide-toggle>
@@ -13,7 +13,8 @@
                            [cumulative]="cumulative"
                            [total]="total"
                            [maximum]="maximum"
-                           (selected)="processCheckboxChange(i, $event)"></app-graph-bar>
+                           (selected)="processCheckboxChange(i, $event)"
+                           (clicked)="modelClicked(i)"></app-graph-bar>
         </div>
     </div>
 </div>

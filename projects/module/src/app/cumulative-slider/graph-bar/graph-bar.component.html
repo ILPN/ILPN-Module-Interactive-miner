@@ -1,8 +1,9 @@
 <div fxLayout="row" fxLayoutAlign="start stretch" class="width-100">
-    <input type="checkbox" [formControl]="config.fc" (change)="emitValue($event)">
-    <div class="graph-bar height-100"
-         [ngStyle]="{'width': 'calc(10px + (100% - 10px) * ( '+ (cumulative ? config.cumulated+'/'+total : config.absolute+'/'+maximum)+' ))'}"
-         [ngClass]="{'red-graph-button': config.state === 0, 'green-graph-button': config.state !== 0}">
+    <input type="checkbox" class="checkbox" [formControl]="config.fc" (change)="emitValue($event)">
+    <button class="graph-bar"
+            (click)="emitClick($event)"
+            [ngStyle]="{'width': 'calc(10px + (100% - 10px) * ( '+ (cumulative ? config.cumulated+'/'+total : config.absolute+'/'+maximum)+' ))'}"
+            [ngClass]="{'red-graph-button': config.state === 0, 'green-graph-button': config.state !== 0, 'selected': config.selected}">
         <span>{{cumulative ? config.cumulated : config.absolute}}</span>
-    </div>
+    </button>
 </div>

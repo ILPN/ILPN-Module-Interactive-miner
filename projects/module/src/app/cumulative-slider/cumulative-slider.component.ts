@@ -42,10 +42,14 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
     @Output()
     public sizeChanged: EventEmitter<number>;
 
+    @Output()
+    public modelSelected: EventEmitter<number>;
+
     constructor(private _pnToPoTransformer: PetriNetToPartialOrderTransformerService) {
         this._selected = new Set<number>();
         this.selectionUpdate = new EventEmitter<Set<number>>();
         this.sizeChanged = new EventEmitter<number>();
+        this.modelSelected = new EventEmitter<number>();
         this.fcCumulative = new FormControl(this.cumulative);
         this._fcCumulativeSub = this.fcCumulative.valueChanges.subscribe(v => {
             this.cumulative = v;
@@ -112,7 +116,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
         this._model = undefined;
         this._selected = new Set(this.buttons.length > 0 ? [0] : []);
         this.selectionUpdate.emit(new Set(this._selected));
-        this.sizeChanged.emit(20 * this.buttons.length + 27);
+        this.sizeChanged.emit(18 * this.buttons.length + 27);
         this._oldSliderValue = 0;
         this.fcSlider.setValue(0);
         if (this.buttons.length > 0) {
@@ -128,7 +132,8 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
                 absolute: po.net.frequency!,
                 cumulated: runningTotal + po.net.frequency!,
                 state: ButtonState.DESELECTED,
-                fc: new FormControl(false)
+                fc: new FormControl(false),
+                selected: false,
             };
             runningTotal += po.net.frequency!;
             return c;
@@ -157,4 +162,27 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
             return false;
         }
     }
+
+    public modelClicked(index: number) {
+        this.buttons[index].selected = !this.buttons[index].selected;
+        if (this.buttons[index].selected) {
+            for (let i = 0; i < this.buttons.length; i++) {
+                if (i === index) {
+                    continue;
+                }
+                this.buttons[i].selected = false;
+            }
+            this.modelSelected.emit(index);
+        } else {
+            this.cancelSelection();
+        }
+    }
+
+    public cancelSelection() {
+        for (let i = 0; i < this.buttons.length; i++) {
+            this.buttons[i].selected = false;
+        }
+        this.modelSelected.emit(-1);
+    }
+
 }

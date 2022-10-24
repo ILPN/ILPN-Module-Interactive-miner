@@ -107,4 +107,8 @@ export class AppComponent extends LogCleaner implements OnDestroy {
             this.svgHeight = `${newHeight}px`;
         }
     }
+
+    changeModelDisplay(index: number) {
+        console.log(index);
+    }
 }
