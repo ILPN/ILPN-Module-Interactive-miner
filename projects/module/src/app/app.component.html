@@ -8,7 +8,7 @@
             <ilpn-file-download [fileDisplay]="fdPN" descriptionText="Download current model" [disabled]="file === undefined" [files]="file"></ilpn-file-download>
         </div>
 
-        <ilpn-pn-display fxFlex="70" [petriNet$]="model$" [height]="svgHeight" [ngStyle]="{height: svgHeight}"></ilpn-pn-display>
+        <ilpn-pn-display fxFlex="70" [petriNet$]="displayedModel$" [height]="svgHeight" [ngStyle]="{height: svgHeight}"></ilpn-pn-display>
 
         <app-cumulative-slider class="content-side content-right" fxFlex="15"
                                [pos]="pos"

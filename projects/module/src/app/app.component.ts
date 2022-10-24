@@ -26,6 +26,7 @@ export class AppComponent extends LogCleaner implements OnDestroy {
     private _minerSub: Subscription | undefined;
     private _modelSub: Subscription;
     private _posInModel = new Set<number>();
+    private _displayedIndex = -1;
 
     fdLog = FD_LOG;
     fdPN = FD_PETRI_NET;
@@ -33,6 +34,7 @@ export class AppComponent extends LogCleaner implements OnDestroy {
     log: Array<Trace> | undefined;
     pos: Array<PartialOrderNetWithContainedTraces> = [];
 
+    displayedModel$: BehaviorSubject<PetriNet>;
     model$: BehaviorSubject<PetriNet>;
     file: DropFile | undefined;
 
@@ -45,6 +47,7 @@ export class AppComponent extends LogCleaner implements OnDestroy {
                 private _serialisationService: PetriNetSerialisationService) {
         super();
         this.model$ = new BehaviorSubject<PetriNet>(new PetriNet());
+        this.displayedModel$ = new BehaviorSubject<PetriNet>(new PetriNet());
         this._modelSub = this.model$.subscribe(net => {
             if (net.isEmpty()) {
                 this.file = undefined;
@@ -59,6 +62,8 @@ export class AppComponent extends LogCleaner implements OnDestroy {
             this._minerSub.unsubscribe();
         }
         this._modelSub.unsubscribe();
+        this.model$.complete();
+        this.displayedModel$.complete();
     }
 
     processUpload(files: Array<DropFile>) {
@@ -81,13 +86,13 @@ export class AppComponent extends LogCleaner implements OnDestroy {
         }
         if (nets.length === 0) {
             this._posInModel.clear();
-            this.model$.next(new PetriNet());
+            this.emitNext(new PetriNet());
             return;
         }
 
         if (selectedIndices.size === this._posInModel.size && Array.from(selectedIndices).every(i => this._posInModel.has(i))) {
             // the specification has not changed => the current model is still valid;
-            this.model$.next(this.model$.value);
+            this.emitNext(this.model$.value);
             return;
         }
 
@@ -96,7 +101,7 @@ export class AppComponent extends LogCleaner implements OnDestroy {
             oneBoundRegions: true
         }).subscribe(r => {
             this._posInModel = selectedIndices;
-            this.model$.next(r.net);
+            this.emitNext(r.net);
         });
     }
 
@@ -108,7 +113,19 @@ export class AppComponent extends LogCleaner implements OnDestroy {
         }
     }
 
+    private emitNext(model: PetriNet) {
+        this.model$.next(model);
+        if (this._displayedIndex === -1) {
+            this.displayedModel$.next(model);
+        }
+    }
+
     changeModelDisplay(index: number) {
-        console.log(index);
+        this._displayedIndex = index;
+        if (this._displayedIndex === -1) {
+            this.displayedModel$.next(this.model$.value);
+        } else {
+            this.displayedModel$.next(this.pos[this._displayedIndex].net);
+        }
     }
 }
