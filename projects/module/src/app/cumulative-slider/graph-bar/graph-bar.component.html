@@ -1,5 +1,5 @@
-<div fxLayout="row" fxLayoutAlign="start stretch" class="width-100">
-    <input type="checkbox" class="checkbox" [formControl]="config.fc" (change)="emitValue($event)">
+<div fxLayout="row" fxLayoutAlign="start stretch" class="width-100 height-100">
+    <input type="checkbox" class="checkbox" fxFlexAlign="center" [formControl]="config.fc" (change)="emitValue($event)">
     <button class="graph-bar"
             (click)="emitClick($event)"
             [ngStyle]="{'width': 'calc(10px + (100% - 10px) * ( '+ (cumulative ? config.cumulated+'/'+total : config.absolute+'/'+maximum)+' ))'}"

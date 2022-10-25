@@ -7,8 +7,8 @@
     <div fxLayout="row" fxLayoutAlign="start stretch" class="width-100 height-100">
         <mat-slider invert min="0" [max]="buttons.length - 1" step="1" vertical class="height-100"
                     [formControl]="fcSlider"></mat-slider>
-        <div fxLayout="column" fxLayoutAlign="start start" class="width-100 height-100 overflow-scroll">
-            <app-graph-bar *ngFor="let config of buttons; let i = index" class="width-100"
+        <div fxLayout="column" fxLayoutAlign="start start" class="width-100 height-100">
+            <app-graph-bar *ngFor="let config of buttons; let i = index" class="width-100" fxFlex
                            [config]="config"
                            [cumulative]="cumulative"
                            [total]="total"
