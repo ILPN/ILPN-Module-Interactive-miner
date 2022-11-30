@@ -1,10 +1,10 @@
 import {Component, OnDestroy} from '@angular/core';
 import {
     AlphaOracleService,
+    cleanLog,
     DropFile,
     FD_LOG,
     FD_PETRI_NET,
-    LogCleaner,
     LogToPartialOrderTransformerService,
     PartialOrderNetWithContainedTraces,
     PetriNet,
@@ -21,7 +21,7 @@ import {BehaviorSubject, Subscription} from 'rxjs';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
 })
-export class AppComponent extends LogCleaner implements OnDestroy {
+export class AppComponent implements OnDestroy {
 
     private _minerSub: Subscription | undefined;
     private _modelSub: Subscription;
@@ -45,7 +45,6 @@ export class AppComponent extends LogCleaner implements OnDestroy {
                 private _poTransformer: LogToPartialOrderTransformerService,
                 private _primeMiner: PrimeMinerService,
                 private _serialisationService: PetriNetSerialisationService) {
-        super();
         this.model$ = new BehaviorSubject<PetriNet>(new PetriNet());
         this.displayedModel$ = new BehaviorSubject<PetriNet>(new PetriNet());
         this._modelSub = this.model$.subscribe(net => {
@@ -68,7 +67,7 @@ export class AppComponent extends LogCleaner implements OnDestroy {
 
     processUpload(files: Array<DropFile>) {
         this.log = this._logParser.parse(files[0].content);
-        this.log = this.cleanLog(this.log);
+        this.log = cleanLog(this.log);
         if (this.log !== undefined) {
             const concurrency = this._oracle.determineConcurrency(this.log, {
                 lookAheadDistance: 1,
