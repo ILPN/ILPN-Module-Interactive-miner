@@ -73,7 +73,7 @@ export class AppComponent implements OnDestroy {
                 lookAheadDistance: 1,
                 distinguishSameLabels: false
             });
-            this.pos = this._poTransformer.transformToPartialOrders(this.log, concurrency);
+            this.pos = this._poTransformer.transformToPartialOrders(this.log, concurrency, {discardPrefixes: true});
             this.pos.sort((a, b) => b.net.frequency! - a.net.frequency!);
         }
     }

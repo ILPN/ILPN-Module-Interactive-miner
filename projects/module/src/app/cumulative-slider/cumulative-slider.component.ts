@@ -29,7 +29,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
     public buttons: Array<ButtonConfig> = [];
     public total = 0;
     public maximum = 0;
-    public cumulative = true;
+    public cumulative = false;
     public fcCumulative: FormControl;
     public fcSlider: FormControl;
 
