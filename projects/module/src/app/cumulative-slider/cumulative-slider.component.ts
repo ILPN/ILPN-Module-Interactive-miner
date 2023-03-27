@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {
     LpoFireValidator,
-    PartialOrderNetWithContainedTraces,
     PetriNet,
     PetriNetToPartialOrderTransformerService
 } from 'ilpn-components';
@@ -20,9 +19,10 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
 
     private _fcCumulativeSub: Subscription;
     private _fcSliderSub: Subscription;
-    private _modelSub: Subscription | undefined;
-    private _pos: Array<PartialOrderNetWithContainedTraces> = [];
-    private _model: PetriNet | undefined;
+    private _modelSub?: Subscription;
+    private _posSub?: Subscription;
+    private _pos: Array<PetriNet> = [];
+    private _model?: PetriNet;
     private _oldSliderValue = 0;
     private _selected: Set<number>;
 
@@ -35,6 +35,9 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
 
     @Input()
     public model$: Observable<PetriNet | undefined> | undefined;
+
+    @Input()
+    public pos$: Observable<Array<PetriNet>> | undefined;
 
     @Output()
     public selectionUpdate: EventEmitter<Set<number>>;
@@ -75,27 +78,14 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        if (this.model$ === undefined) {
+        if (this.model$ === undefined || this.pos$ === undefined) {
             return;
         }
         this._modelSub = this.model$.subscribe(net => {
-            if (net === undefined) {
-                this._model = undefined;
-                return;
-            }
-            this._model = net;
-
-            for (let i = 0; i < this._pos.length; i++) {
-                const button = this.buttons[i];
-                if (button.state == ButtonState.SELECTED) {
-                    continue;
-                }
-                if (this.firePO(net, this._pos[i].net)) {
-                    button.state = ButtonState.SUGGESTED;
-                } else {
-                    button.state = ButtonState.DESELECTED;
-                }
-            }
+            this.processNewModel(net);
+        });
+        this._posSub = this.pos$.subscribe(pos => {
+            this.processNewPOs(pos);
         });
     }
 
@@ -105,13 +95,35 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
         if (this._modelSub !== undefined) {
             this._modelSub.unsubscribe();
         }
+        if (this._posSub !== undefined) {
+            this._posSub.unsubscribe();
+        }
     }
 
-    @Input()
-    set pos(pos: Array<PartialOrderNetWithContainedTraces>) {
+    private processNewModel(model?: PetriNet) {
+        if (model === undefined) {
+            this._model = undefined;
+            return;
+        }
+        this._model = model;
+
+        for (let i = 0; i < this._pos.length; i++) {
+            const button = this.buttons[i];
+            if (button.state == ButtonState.SELECTED) {
+                continue;
+            }
+            if (this.firePO(model, this._pos[i])) {
+                button.state = ButtonState.SUGGESTED;
+            } else {
+                button.state = ButtonState.DESELECTED;
+            }
+        }
+    }
+
+    private processNewPOs(pos: Array<PetriNet>) {
         this._pos = pos;
-        this.total = this._pos.reduce((acc, po) => acc + po.net.frequency!, 0);
-        this.maximum = this._pos.reduce((max, po) => max >= po.net.frequency! ? max : po.net.frequency!, 0);
+        this.total = this._pos.reduce((acc, po) => acc + po.frequency!, 0);
+        this.maximum = this._pos.reduce((max, po) => max >= po.frequency! ? max : po.frequency!, 0);
         this.generateButtonConfig();
         this._model = undefined;
         this._selected = new Set(this.buttons.length > 0 ? [0] : []);
@@ -129,13 +141,13 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
         this.buttons = this._pos.map((po, index) => {
             const c: ButtonConfig = {
                 index,
-                absolute: po.net.frequency!,
-                cumulated: runningTotal + po.net.frequency!,
+                absolute: po.frequency!,
+                cumulated: runningTotal + po.frequency!,
                 state: ButtonState.DESELECTED,
                 fc: new FormControl(false),
                 selected: false,
             };
-            runningTotal += po.net.frequency!;
+            runningTotal += po.frequency!;
             return c;
         });
     }

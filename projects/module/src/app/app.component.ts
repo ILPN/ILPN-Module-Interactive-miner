@@ -5,11 +5,11 @@ import {
     DropFile,
     FD_LOG,
     FD_PETRI_NET,
+    IncrementalMiner,
+    IncrementalMinerFactoryService,
     LogToPartialOrderTransformerService,
-    PartialOrderNetWithContainedTraces,
     PetriNet,
     PetriNetSerialisationService,
-    PrimeMinerService,
     Trace,
     XesLogParserService
 } from 'ilpn-components';
@@ -23,19 +23,19 @@ import {BehaviorSubject, Subscription} from 'rxjs';
 })
 export class AppComponent implements OnDestroy {
 
+    private _miner: IncrementalMiner;
     private _minerSub: Subscription | undefined;
     private _modelSub: Subscription;
-    private _posInModel = new Set<number>();
     private _displayedIndex = -1;
 
     fdLog = FD_LOG;
     fdPN = FD_PETRI_NET;
 
     log: Array<Trace> | undefined;
-    pos: Array<PartialOrderNetWithContainedTraces> = [];
 
     displayedModel$: BehaviorSubject<PetriNet>;
     model$: BehaviorSubject<PetriNet>;
+    pos$: BehaviorSubject<Array<PetriNet>>;
     file: DropFile | undefined;
 
     svgHeight = '800px';
@@ -43,8 +43,8 @@ export class AppComponent implements OnDestroy {
     constructor(private _logParser: XesLogParserService,
                 private _oracle: AlphaOracleService,
                 private _poTransformer: LogToPartialOrderTransformerService,
-                private _primeMiner: PrimeMinerService,
-                private _serialisationService: PetriNetSerialisationService) {
+                private _serialisationService: PetriNetSerialisationService,
+                minerFactory: IncrementalMinerFactoryService) {
         this.model$ = new BehaviorSubject<PetriNet>(new PetriNet());
         this.displayedModel$ = new BehaviorSubject<PetriNet>(new PetriNet());
         this._modelSub = this.model$.subscribe(net => {
@@ -54,6 +54,8 @@ export class AppComponent implements OnDestroy {
                 this.file = new DropFile('model.pn', this._serialisationService.serialise(net));
             }
         })
+        this.pos$ = new BehaviorSubject<Array<PetriNet>>([]);
+        this._miner = minerFactory.create(this.pos$.asObservable());
     }
 
     ngOnDestroy(): void {
@@ -63,6 +65,7 @@ export class AppComponent implements OnDestroy {
         this._modelSub.unsubscribe();
         this.model$.complete();
         this.displayedModel$.complete();
+        this.pos$.complete();
     }
 
     processUpload(files: Array<DropFile>) {
@@ -73,34 +76,22 @@ export class AppComponent implements OnDestroy {
                 lookAheadDistance: 1,
                 distinguishSameLabels: false
             });
-            this.pos = this._poTransformer.transformToPartialOrders(this.log, concurrency, {discardPrefixes: true});
-            this.pos.sort((a, b) => b.net.frequency! - a.net.frequency!);
+            const pos = this._poTransformer.transformToPartialOrders(this.log, concurrency, {discardPrefixes: true}).map(po => po.net);
+            pos.sort((a, b) => b.frequency! - a.frequency!);
+            this.pos$.next(pos);
         }
     }
 
     updateModel(selectedIndices: Set<number>) {
-        const nets = [];
-        for (const i of Array.from(selectedIndices).sort()) {
-            nets.push(this.pos[i]);
-        }
-        if (nets.length === 0) {
-            this._posInModel.clear();
+        if (selectedIndices.size === 0) {
             this.emitNext(new PetriNet());
             return;
         }
 
-        if (selectedIndices.size === this._posInModel.size && Array.from(selectedIndices).every(i => this._posInModel.has(i))) {
-            // the specification has not changed => the current model is still valid;
-            this.emitNext(this.model$.value);
-            return;
-        }
-
-        this._minerSub = this._primeMiner.mine(nets, {
-            skipConnectivityCheck: true,
+        this._minerSub = this._miner.mine(selectedIndices, {
             oneBoundRegions: true
-        }).subscribe(r => {
-            this._posInModel = selectedIndices;
-            this.emitNext(r.net);
+        }).subscribe(net => {
+            this.emitNext(net);
         });
     }
 
@@ -124,7 +115,7 @@ export class AppComponent implements OnDestroy {
         if (this._displayedIndex === -1) {
             this.displayedModel$.next(this.model$.value);
         } else {
-            this.displayedModel$.next(this.pos[this._displayedIndex].net);
+            this.displayedModel$.next(this.pos$.value[this._displayedIndex]);
         }
     }
 }
