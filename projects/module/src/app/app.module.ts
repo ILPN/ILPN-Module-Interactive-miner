@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {AppComponent} from './app.component';
-import {IlpnComponentsModule} from 'ilpn-components';
+import {IlpnAlgorithmsModule, IlpnComponentsModule} from 'ilpn-components';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -25,6 +25,9 @@ import {GraphBarComponent} from './cumulative-slider/graph-bar/graph-bar.compone
     imports: [
         BrowserModule,
         IlpnComponentsModule,
+        IlpnAlgorithmsModule.withDebugConfig({
+            logRegions: true
+        }),
         FlexLayoutModule,
         ReactiveFormsModule,
         MatSlideToggleModule,
