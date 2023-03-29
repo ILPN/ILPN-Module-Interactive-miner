@@ -1,5 +1,10 @@
 <ilpn-page-layout>
-    <h2>TODO title</h2>
+    <h2>
+        A tool for exploratory process discovery utilising Petri net regions - This tool is submitted as
+        <br><i>A Second Glimpse at Petri Net Regions - A Tool for Exploratory Process Discovery</i> by J. Kovář, S. Folz-Weinstein and R. Bergenthum
+        <br>to ATAED 2023.
+    </h2>
+
     <hr>
 
     <div flexLayout="row" flexLayoutAlign="start start" class="content-wrapper">
@@ -18,5 +23,15 @@
                                (modelSelected)="changeModelDisplay($event)">
         </app-cumulative-slider>
     </div>
+
+    <hr>
+    <h2>download examples</h2>
+    <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayout.sm="column" fxLayoutAlign.sm="space-between center">
+        <ilpn-descriptive-link [fileDisplay]="fdLog" title="Repair example with noise" description="The repair example from the ProM Tools tutorial with additional traces [1]" link="assets/repairExampleNoise.xes" [download]="true"></ilpn-descriptive-link>
+        <ilpn-descriptive-link [fileDisplay]="fdLog" title="Unaltered repair example" description="The repair example from the ProM Tools tutorial [1]" link="assets/repairExample.xes" [download]="true"></ilpn-descriptive-link>
+    </div>
+
+    <br>
+    <span>[1] example XES files were adapted from the originals used in the <a href="http://www.promtools.org/doku.php">ProM Tools tutorial</a>. The original files can be downloaded <a href="http://www.promtools.org/prom6/downloads/example-logs.zip">here</a></span>
 
 </ilpn-page-layout>
