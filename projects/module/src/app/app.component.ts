@@ -8,7 +8,6 @@ import {
     IncrementalMiner,
     IncrementalMinerFactoryService,
     LogToPartialOrderTransformerService,
-    MessageLevel,
     PetriNet,
     PetriNetRegionSynthesisService,
     PetriNetSerialisationService,
@@ -27,12 +26,14 @@ import {FormControl} from '@angular/forms';
 })
 export class AppComponent implements OnDestroy {
 
-    private _incrementalMiner: IncrementalMiner;
+    private readonly _incrementalMinerNoWeights: IncrementalMiner;
+    private readonly _incrementalMinerWeights: IncrementalMiner;
     private _minerSub: Subscription | undefined;
     private _modelSub: Subscription;
     private _displayedIndex = -1;
     private _selectedIndices?: Set<number>;
     private _fcIncrementalSub: Subscription;
+    private _fcWeightsSub: Subscription;
 
     fdLog = FD_LOG;
     fdPN = FD_PETRI_NET;
@@ -67,8 +68,15 @@ export class AppComponent implements OnDestroy {
             }
         })
         this.pos$ = new BehaviorSubject<Array<PetriNet>>([]);
-        this._incrementalMiner = minerFactory.create(this.pos$.asObservable());
+
+        // separate caches!
+        this._incrementalMinerNoWeights = minerFactory.create(this.pos$.asObservable());
+        this._incrementalMinerWeights = minerFactory.create(this.pos$.asObservable());
+
         this._fcIncrementalSub = this.fcIncremental.valueChanges.subscribe(() => {
+            this.mineModel();
+        });
+        this._fcWeightsSub = this.fcArcWeights.valueChanges.subscribe(() => {
             this.mineModel();
         });
     }
@@ -79,6 +87,7 @@ export class AppComponent implements OnDestroy {
         }
         this._modelSub.unsubscribe();
         this._fcIncrementalSub.unsubscribe();
+        this._fcWeightsSub.unsubscribe();
 
         this.model$.complete();
         this.displayedModel$.complete();
@@ -140,11 +149,12 @@ export class AppComponent implements OnDestroy {
         }
 
         const config: RegionsConfiguration = {
-            noArcWeights: true
+            noArcWeights: !this.fcArcWeights.value
         };
 
         if (this.fcIncremental.value) {
-            this._minerSub = this._incrementalMiner.mine(this._selectedIndices, config).subscribe(net => {
+            const miner = this.fcArcWeights.value ? this._incrementalMinerWeights : this._incrementalMinerNoWeights;
+            this._minerSub = miner.mine(this._selectedIndices, config).subscribe(net => {
                 this.emitNext(net);
             });
         } else {
