@@ -28,7 +28,7 @@ hr {
     //min-height: 800px;
 }
 
-.content-side {
+.border-color {
     border-color: #d3d3d3;
 }
 
@@ -38,4 +38,17 @@ hr {
 
 .content-right {
     border-left-style: dotted;
+}
+
+.content-inner {
+    border-top-style: dotted;
+}
+
+.side-margin {
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+.width-100 {
+    width: 100%;
 }

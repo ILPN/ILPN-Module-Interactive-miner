@@ -8,12 +8,16 @@ import {
     IncrementalMiner,
     IncrementalMinerFactoryService,
     LogToPartialOrderTransformerService,
+    MessageLevel,
     PetriNet,
+    PetriNetRegionSynthesisService,
     PetriNetSerialisationService,
+    RegionsConfiguration,
     Trace,
     XesLogParserService
 } from 'ilpn-components';
-import {BehaviorSubject, Subscription} from 'rxjs';
+import {BehaviorSubject, map, Subscription} from 'rxjs';
+import {FormControl} from '@angular/forms';
 
 
 @Component({
@@ -23,10 +27,12 @@ import {BehaviorSubject, Subscription} from 'rxjs';
 })
 export class AppComponent implements OnDestroy {
 
-    private _miner: IncrementalMiner;
+    private _incrementalMiner: IncrementalMiner;
     private _minerSub: Subscription | undefined;
     private _modelSub: Subscription;
     private _displayedIndex = -1;
+    private _selectedIndices?: Set<number>;
+    private _fcIncrementalSub: Subscription;
 
     fdLog = FD_LOG;
     fdPN = FD_PETRI_NET;
@@ -40,11 +46,17 @@ export class AppComponent implements OnDestroy {
 
     svgHeight = '800px';
 
+    fcIncremental: FormControl;
+    fcArcWeights: FormControl;
+
     constructor(private _logParser: XesLogParserService,
                 private _oracle: AlphaOracleService,
                 private _poTransformer: LogToPartialOrderTransformerService,
                 private _serialisationService: PetriNetSerialisationService,
+                // private _regionMiner: PetriNetRegionSynthesisService,
                 minerFactory: IncrementalMinerFactoryService) {
+        this.fcIncremental = new FormControl(true);
+        this.fcArcWeights = new FormControl(false);
         this.model$ = new BehaviorSubject<PetriNet>(new PetriNet());
         this.displayedModel$ = new BehaviorSubject<PetriNet>(new PetriNet());
         this._modelSub = this.model$.subscribe(net => {
@@ -55,7 +67,10 @@ export class AppComponent implements OnDestroy {
             }
         })
         this.pos$ = new BehaviorSubject<Array<PetriNet>>([]);
-        this._miner = minerFactory.create(this.pos$.asObservable());
+        this._incrementalMiner = minerFactory.create(this.pos$.asObservable());
+        this._fcIncrementalSub = this.fcIncremental.valueChanges.subscribe(() => {
+            this.mineModel();
+        });
     }
 
     ngOnDestroy(): void {
@@ -63,6 +78,8 @@ export class AppComponent implements OnDestroy {
             this._minerSub.unsubscribe();
         }
         this._modelSub.unsubscribe();
+        this._fcIncrementalSub.unsubscribe();
+
         this.model$.complete();
         this.displayedModel$.complete();
         this.pos$.complete();
@@ -88,11 +105,8 @@ export class AppComponent implements OnDestroy {
             return;
         }
 
-        this._minerSub = this._miner.mine(selectedIndices, {
-            oneBoundRegions: true
-        }).subscribe(net => {
-            this.emitNext(net);
-        });
+        this._selectedIndices = selectedIndices;
+        this.mineModel();
     }
 
     svgSizeChange(newHeight: number) {
@@ -116,6 +130,38 @@ export class AppComponent implements OnDestroy {
             this.displayedModel$.next(this.model$.value);
         } else {
             this.displayedModel$.next(this.pos$.value[this._displayedIndex]);
+        }
+    }
+
+    private mineModel() {
+        if (this._selectedIndices === undefined || this._selectedIndices.size === 0) {
+            console.debug('No spec indices selected');
+            return;
+        }
+
+        const config: RegionsConfiguration = {
+            noArcWeights: true,
+            messageLevel: MessageLevel.ALL
+        };
+
+        if (this.fcIncremental.value) {
+            this._minerSub = this._incrementalMiner.mine(this._selectedIndices, config).subscribe(net => {
+                this.emitNext(net);
+            });
+        } else {
+            const pos = [];
+
+            for (const i of this._selectedIndices) {
+                pos.push(this.pos$.value[i]);
+            }
+
+            // this._minerSub = this._regionMiner.synthesise(pos, config)
+            //     .pipe(
+            //         map(sr => sr.result)
+            //     )
+            //     .subscribe(net => {
+            //         this.emitNext(net);
+            //     });
         }
     }
 }

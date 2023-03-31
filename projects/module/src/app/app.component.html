@@ -8,14 +8,25 @@
     <hr>
 
     <div flexLayout="row" flexLayoutAlign="start start" class="content-wrapper">
-        <div flexLayout="column" flexLayoutAlign="start stretch" class="content-side content-left" fxFlex="15">
+        <div flexLayout="column" flexLayoutAlign="start stretch" class="border-color content-left" fxFlex="15">
             <ilpn-file-upload [fileDisplay]="fdLog" descriptionText="Drop a XES log file here" (fileContent)="processUpload($event)"></ilpn-file-upload>
             <ilpn-file-download [fileDisplay]="fdPN" descriptionText="Download current model" [disabled]="file === undefined" [files]="file"></ilpn-file-download>
+
+            <div flexLayout="column" flexLayoutAlign="start stretch" class="border-color content-inner">
+                <div flexLayout="row" flexLayoutAlign="space-between center" class="width-100">
+                    <span fxFlex>incremental synthesis</span>
+                    <div fxLayout="row" fxLayoutAlign="end center">
+                        <span>off</span>
+                        <mat-slide-toggle [formControl]="fcIncremental" class="side-margin"></mat-slide-toggle>
+                        <span>on</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <ilpn-pn-display fxFlex="70" [petriNet$]="displayedModel$" [height]="svgHeight" [ngStyle]="{height: svgHeight}"></ilpn-pn-display>
 
-        <app-cumulative-slider class="content-side content-right" fxFlex="15"
+        <app-cumulative-slider class="border-color content-right" fxFlex="15"
                                [pos$]="pos$"
                                [model$]="model$"
                                (selectionUpdate)="updateModel($event)"
@@ -32,6 +43,6 @@
     </div>
 
     <br>
-    <span>[1] example XES files were adapted from the originals used in the <a href="http://www.promtools.org/doku.php">ProM Tools tutorial</a>. The original files can be downloaded <a href="http://www.promtools.org/prom6/downloads/example-logs.zip">here</a></span>
+    <span>[1] example XES files were adapted from the originals used in the <a href="https://promtools.org/prom-documentation/">ProM Tools tutorial</a>. The original files can be downloaded <a href="https://promtools.org/?smd_process_download=1&download_id=161">here</a></span>
 
 </ilpn-page-layout>
