@@ -53,7 +53,7 @@ export class AppComponent implements OnDestroy {
                 private _oracle: AlphaOracleService,
                 private _poTransformer: LogToPartialOrderTransformerService,
                 private _serialisationService: PetriNetSerialisationService,
-                // private _regionMiner: PetriNetRegionSynthesisService,
+                private _regionMiner: PetriNetRegionSynthesisService,
                 minerFactory: IncrementalMinerFactoryService) {
         this.fcIncremental = new FormControl(true);
         this.fcArcWeights = new FormControl(false);
@@ -140,8 +140,7 @@ export class AppComponent implements OnDestroy {
         }
 
         const config: RegionsConfiguration = {
-            noArcWeights: true,
-            messageLevel: MessageLevel.ALL
+            noArcWeights: true
         };
 
         if (this.fcIncremental.value) {
@@ -155,13 +154,13 @@ export class AppComponent implements OnDestroy {
                 pos.push(this.pos$.value[i]);
             }
 
-            // this._minerSub = this._regionMiner.synthesise(pos, config)
-            //     .pipe(
-            //         map(sr => sr.result)
-            //     )
-            //     .subscribe(net => {
-            //         this.emitNext(net);
-            //     });
+            this._minerSub = this._regionMiner.synthesise(pos, config)
+                .pipe(
+                    map(sr => sr.result)
+                )
+                .subscribe(net => {
+                    this.emitNext(net);
+                });
         }
     }
 }
