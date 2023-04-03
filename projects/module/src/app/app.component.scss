@@ -35,14 +35,17 @@ hr {
 
 .content-left {
     border-right-style: dotted;
+    min-width: 19em;
 }
 
 .content-right {
     border-left-style: dotted;
+    min-width: 15em;
 }
 
 .content-inner {
     border-top-style: dotted;
+    margin-top: 16px;
 }
 
 .side-margin {
@@ -62,4 +65,8 @@ hr {
     right: 0;
     z-index: 2;
     background-color: #aaaaaaaa;
+}
+
+.block {
+    display: inline-block;
 }

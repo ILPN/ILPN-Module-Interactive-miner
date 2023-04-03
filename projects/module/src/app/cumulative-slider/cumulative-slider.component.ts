@@ -58,6 +58,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
             this.cumulative = v;
         });
         this.fcSlider = new FormControl(0);
+        this.fcSlider.disable();
         this._fcSliderSub = this.fcSlider.valueChanges.pipe(debounceTime(500)).subscribe(i => {
             if (i > this._oldSliderValue) {
                 for (let j = this._oldSliderValue + 1; j <= i; j++) {
@@ -133,6 +134,9 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
         this.fcSlider.setValue(0);
         if (this.buttons.length > 0) {
             this.buttons[0].fc.setValue(true);
+            this.fcSlider.enable();
+        } else {
+            this.fcSlider.disable();
         }
     }
 

@@ -18,7 +18,7 @@
 
                 <div flexLayout="column" flexLayoutAlign="start stretch" class="border-color content-inner">
                     <div flexLayout="row" flexLayoutAlign="space-between center" class="width-100">
-                        <span fxFlex>incremental synthesis</span>
+                        <div fxFlex fxLayoutAlign="start center">incremental synthesis</div>
                         <div fxLayout="row" fxLayoutAlign="end center">
                             <span>off</span>
                             <mat-slide-toggle [formControl]="fcIncremental" class="side-margin"></mat-slide-toggle>
@@ -26,7 +26,7 @@
                         </div>
                     </div>
                     <div flexLayout="row" flexLayoutAlign="space-between center" class="width-100">
-                        <span fxFlex>arc weights</span>
+                        <div fxFlex fxLayoutAlign="start center">arc weights</div>
                         <div fxLayout="row" fxLayoutAlign="end center">
                             <span>off</span>
                             <mat-slide-toggle [formControl]="fcArcWeights" class="side-margin"></mat-slide-toggle>

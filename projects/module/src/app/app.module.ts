@@ -16,12 +16,16 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {GraphBarComponent} from './cumulative-slider/graph-bar/graph-bar.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { SliderGridRowPipe } from './cumulative-slider/pipes/slider-grid-row.pipe';
+import { GraphBarRowPipe } from './cumulative-slider/pipes/graph-bar-row.pipe';
 
 @NgModule({
     declarations: [
         AppComponent,
         CumulativeSliderComponent,
-        GraphBarComponent
+        GraphBarComponent,
+        SliderGridRowPipe,
+        GraphBarRowPipe
     ],
     imports: [
         BrowserModule,

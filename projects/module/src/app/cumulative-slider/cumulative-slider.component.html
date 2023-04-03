@@ -4,17 +4,17 @@
         <mat-slide-toggle [formControl]="fcCumulative" class="side-margin"></mat-slide-toggle>
         <span>cumulative</span>
     </div>
-    <div fxLayout="row" fxLayoutAlign="start stretch" class="width-100 height-100">
+    <div gdColumns="48px auto" class="width-100 height-100">
         <mat-slider invert min="0" [max]="buttons.length - 1" step="1" vertical class="height-100"
-                    [formControl]="fcSlider"></mat-slider>
-        <div fxLayout="column" fxLayoutAlign="start start" class="width-100 height-100">
-            <app-graph-bar *ngFor="let config of buttons; let i = index" class="width-100" fxFlex
-                           [config]="config"
-                           [cumulative]="cumulative"
-                           [total]="total"
-                           [maximum]="maximum"
-                           (selected)="processCheckboxChange(i, $event)"
-                           (clicked)="modelClicked(i)"></app-graph-bar>
-        </div>
+                    [formControl]="fcSlider" [gdRow]="buttons | sliderGridRow" gdColumn="1"></mat-slider>
+        <app-graph-bar *ngFor="let config of buttons; let i = index" class="width-100"
+                       [config]="config"
+                       [cumulative]="cumulative"
+                       [total]="total"
+                       [maximum]="maximum"
+                       (selected)="processCheckboxChange(i, $event)"
+                       (clicked)="modelClicked(i)"
+                       [gdRow]="i | graphBarRow"
+                       gdColumn="2"></app-graph-bar>
     </div>
 </div>
