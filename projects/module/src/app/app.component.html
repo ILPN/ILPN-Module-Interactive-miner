@@ -7,40 +7,45 @@
 
     <hr>
 
-    <div flexLayout="row" flexLayoutAlign="start start" class="content-wrapper">
-        <div flexLayout="column" flexLayoutAlign="start stretch" class="border-color content-left" fxFlex="15">
-            <ilpn-file-upload [fileDisplay]="fdLog" descriptionText="Drop a XES log file here" (fileContent)="processUpload($event)"></ilpn-file-upload>
-            <ilpn-file-download [fileDisplay]="fdPN" descriptionText="Download current model" [disabled]="file === undefined" [files]="file"></ilpn-file-download>
+    <div class="content-wrapper">
+        <div class="loading-blocker" *ngIf="loading$ | async" fxLayoutAlign="center center">
+            <mat-spinner color="accent"></mat-spinner>
+        </div>
+        <div flexLayout="row" flexLayoutAlign="start start">
+            <div flexLayout="column" flexLayoutAlign="start stretch" class="border-color content-left" fxFlex="15">
+                <ilpn-file-upload [fileDisplay]="fdLog" descriptionText="Drop a XES log file here" (fileContent)="processUpload($event)"></ilpn-file-upload>
+                <ilpn-file-download [fileDisplay]="fdPN" descriptionText="Download current model" [disabled]="file === undefined" [files]="file"></ilpn-file-download>
 
-            <div flexLayout="column" flexLayoutAlign="start stretch" class="border-color content-inner">
-                <div flexLayout="row" flexLayoutAlign="space-between center" class="width-100">
-                    <span fxFlex>incremental synthesis</span>
-                    <div fxLayout="row" fxLayoutAlign="end center">
-                        <span>off</span>
-                        <mat-slide-toggle [formControl]="fcIncremental" class="side-margin"></mat-slide-toggle>
-                        <span>on</span>
+                <div flexLayout="column" flexLayoutAlign="start stretch" class="border-color content-inner">
+                    <div flexLayout="row" flexLayoutAlign="space-between center" class="width-100">
+                        <span fxFlex>incremental synthesis</span>
+                        <div fxLayout="row" fxLayoutAlign="end center">
+                            <span>off</span>
+                            <mat-slide-toggle [formControl]="fcIncremental" class="side-margin"></mat-slide-toggle>
+                            <span>on</span>
+                        </div>
                     </div>
-                </div>
-                <div flexLayout="row" flexLayoutAlign="space-between center" class="width-100">
-                    <span fxFlex>arc weights</span>
-                    <div fxLayout="row" fxLayoutAlign="end center">
-                        <span>off</span>
-                        <mat-slide-toggle [formControl]="fcArcWeights" class="side-margin"></mat-slide-toggle>
-                        <span>on</span>
+                    <div flexLayout="row" flexLayoutAlign="space-between center" class="width-100">
+                        <span fxFlex>arc weights</span>
+                        <div fxLayout="row" fxLayoutAlign="end center">
+                            <span>off</span>
+                            <mat-slide-toggle [formControl]="fcArcWeights" class="side-margin"></mat-slide-toggle>
+                            <span>on</span>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <ilpn-pn-display fxFlex="70" [petriNet$]="displayedModel$" [height]="svgHeight" [ngStyle]="{height: svgHeight}"></ilpn-pn-display>
+
+            <app-cumulative-slider class="border-color content-right" fxFlex="15"
+                                   [pos$]="pos$"
+                                   [model$]="model$"
+                                   (selectionUpdate)="updateModel($event)"
+                                   (sizeChanged)="svgSizeChange($event)"
+                                   (modelSelected)="changeModelDisplay($event)">
+            </app-cumulative-slider>
         </div>
-
-        <ilpn-pn-display fxFlex="70" [petriNet$]="displayedModel$" [height]="svgHeight" [ngStyle]="{height: svgHeight}"></ilpn-pn-display>
-
-        <app-cumulative-slider class="border-color content-right" fxFlex="15"
-                               [pos$]="pos$"
-                               [model$]="model$"
-                               (selectionUpdate)="updateModel($event)"
-                               (sizeChanged)="svgSizeChange($event)"
-                               (modelSelected)="changeModelDisplay($event)">
-        </app-cumulative-slider>
     </div>
 
     <hr>

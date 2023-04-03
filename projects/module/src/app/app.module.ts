@@ -15,6 +15,7 @@ import {MatRadioModule} from '@angular/material/radio';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {GraphBarComponent} from './cumulative-slider/graph-bar/graph-bar.component';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @NgModule({
     declarations: [
@@ -38,6 +39,7 @@ import {GraphBarComponent} from './cumulative-slider/graph-bar/graph-bar.compone
         MatRadioModule,
         MatCheckboxModule,
         MatButtonToggleModule,
+        MatProgressSpinnerModule,
     ],
     providers: [
         {

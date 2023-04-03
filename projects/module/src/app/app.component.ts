@@ -50,6 +50,8 @@ export class AppComponent implements OnDestroy {
     fcIncremental: FormControl;
     fcArcWeights: FormControl;
 
+    loading$: BehaviorSubject<boolean>;
+
     constructor(private _logParser: XesLogParserService,
                 private _oracle: AlphaOracleService,
                 private _poTransformer: LogToPartialOrderTransformerService,
@@ -68,6 +70,7 @@ export class AppComponent implements OnDestroy {
             }
         })
         this.pos$ = new BehaviorSubject<Array<PetriNet>>([]);
+        this.loading$ = new BehaviorSubject<boolean>(false);
 
         // separate caches!
         this._incrementalMinerNoWeights = minerFactory.create(this.pos$.asObservable());
@@ -92,9 +95,12 @@ export class AppComponent implements OnDestroy {
         this.model$.complete();
         this.displayedModel$.complete();
         this.pos$.complete();
+        this.loading$.complete();
     }
 
     processUpload(files: Array<DropFile>) {
+        this.loading$.next(true);
+
         this.log = this._logParser.parse(files[0].content);
         this.log = cleanLog(this.log);
         if (this.log !== undefined) {
@@ -106,6 +112,7 @@ export class AppComponent implements OnDestroy {
             pos.sort((a, b) => b.frequency! - a.frequency!);
             this.pos$.next(pos);
         }
+        this.loading$.next(false);
     }
 
     updateModel(selectedIndices: Set<number>) {
@@ -152,10 +159,12 @@ export class AppComponent implements OnDestroy {
             noArcWeights: !this.fcArcWeights.value
         };
 
+        this.loading$.next(true);
         if (this.fcIncremental.value) {
             const miner = this.fcArcWeights.value ? this._incrementalMinerWeights : this._incrementalMinerNoWeights;
             this._minerSub = miner.mine(this._selectedIndices, config).subscribe(net => {
                 this.emitNext(net);
+                this.loading$.next(false);
             });
         } else {
             const pos = [];
@@ -170,6 +179,7 @@ export class AppComponent implements OnDestroy {
                 )
                 .subscribe(net => {
                     this.emitNext(net);
+                    this.loading$.next(false);
                 });
         }
     }

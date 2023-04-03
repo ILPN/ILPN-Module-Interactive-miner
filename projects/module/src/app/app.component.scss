@@ -23,6 +23,7 @@ hr {
 }
 
 .content-wrapper {
+    position: relative;
     border-style: dotted;
     border-color: #d3d3d3;
     //min-height: 800px;
@@ -51,4 +52,14 @@ hr {
 
 .width-100 {
     width: 100%;
+}
+
+.loading-blocker {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    background-color: #aaaaaaaa;
 }
