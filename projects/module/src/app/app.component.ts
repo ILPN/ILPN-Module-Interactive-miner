@@ -31,7 +31,7 @@ export class AppComponent implements OnDestroy {
     private _minerSub: Subscription | undefined;
     private _modelSub: Subscription;
     private _displayedIndex = -1;
-    private _selectedIndices?: Set<number>;
+    private _selectedIndices?: Array<number>;
     private _fcIncrementalSub: Subscription;
     private _fcWeightsSub: Subscription;
 
@@ -115,8 +115,8 @@ export class AppComponent implements OnDestroy {
         this.loading$.next(false);
     }
 
-    updateModel(selectedIndices: Set<number>) {
-        if (selectedIndices.size === 0) {
+    updateModel(selectedIndices: Array<number>) {
+        if (selectedIndices.length === 0) {
             this.emitNext(new PetriNet());
             return;
         }
@@ -150,7 +150,7 @@ export class AppComponent implements OnDestroy {
     }
 
     private mineModel() {
-        if (this._selectedIndices === undefined || this._selectedIndices.size === 0) {
+        if (this._selectedIndices === undefined || this._selectedIndices.length === 0) {
             console.debug('No spec indices selected');
             return;
         }

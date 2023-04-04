@@ -40,7 +40,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
     public pos$: Observable<Array<PetriNet>> | undefined;
 
     @Output()
-    public selectionUpdate: EventEmitter<Set<number>>;
+    public selectionUpdate: EventEmitter<Array<number>>;
 
     @Output()
     public sizeChanged: EventEmitter<number>;
@@ -50,7 +50,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
 
     constructor(private _pnToPoTransformer: PetriNetToPartialOrderTransformerService) {
         this._selected = new Set<number>();
-        this.selectionUpdate = new EventEmitter<Set<number>>();
+        this.selectionUpdate = new EventEmitter<Array<number>>();
         this.sizeChanged = new EventEmitter<number>();
         this.modelSelected = new EventEmitter<number>();
         this.fcCumulative = new FormControl(this.cumulative);
@@ -74,7 +74,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
                 }
             }
             this._oldSliderValue = i;
-            this.selectionUpdate.emit(new Set(this._selected));
+            this.emitSelectionUpdate();
         });
     }
 
@@ -128,7 +128,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
         this.generateButtonConfig();
         this._model = undefined;
         this._selected = new Set(this.buttons.length > 0 ? [0] : []);
-        this.selectionUpdate.emit(new Set(this._selected));
+        this.emitSelectionUpdate();
         this.sizeChanged.emit(18 * this.buttons.length + 27);
         this._oldSliderValue = 0;
         this.fcSlider.setValue(0);
@@ -164,7 +164,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
             this._selected.delete(index);
             this.buttons[index].state = ButtonState.DESELECTED;
         }
-        this.selectionUpdate.emit(new Set(this._selected));
+        this.emitSelectionUpdate();
     }
 
     private firePO(net: PetriNet | undefined, po: PetriNet): boolean {
@@ -199,6 +199,10 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
             this.buttons[i].selected = false;
         }
         this.modelSelected.emit(-1);
+    }
+
+    private emitSelectionUpdate() {
+        this.selectionUpdate.emit(Array.from(this._selected).sort((a, b) => a - b));
     }
 
 }
