@@ -1,7 +1,12 @@
 import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {AppComponent} from './app.component';
-import {IlpnAlgorithmsModule, IlpnComponentsModule} from 'ilpn-components';
+import {
+    IlpnAlgorithmsModule,
+    IlpnComponentsModule,
+    PetriNetLayoutManagerFactoryService,
+    SpringEmbedderLayoutManagerFactoryService
+} from 'ilpn-components';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -16,8 +21,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {GraphBarComponent} from './cumulative-slider/graph-bar/graph-bar.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import { SliderGridRowPipe } from './cumulative-slider/pipes/slider-grid-row.pipe';
-import { GraphBarRowPipe } from './cumulative-slider/pipes/graph-bar-row.pipe';
+import {SliderGridRowPipe} from './cumulative-slider/pipes/slider-grid-row.pipe';
+import {GraphBarRowPipe} from './cumulative-slider/pipes/graph-bar-row.pipe';
 
 @NgModule({
     declarations: [
@@ -50,6 +55,10 @@ import { GraphBarRowPipe } from './cumulative-slider/pipes/graph-bar-row.pipe';
             provide: APP_BASE_HREF,
             useFactory: (s: PlatformLocation) => s.getBaseHrefFromDOM(),
             deps: [PlatformLocation]
+        },
+        {
+            provide: PetriNetLayoutManagerFactoryService,
+            useExisting: SpringEmbedderLayoutManagerFactoryService,
         }
     ],
     bootstrap: [AppComponent]
