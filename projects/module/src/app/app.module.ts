@@ -5,6 +5,7 @@ import {
     IlpnAlgorithmsModule,
     IlpnComponentsModule,
     PetriNetLayoutManagerFactoryService,
+    PnDisplayModule,
     SpringEmbedderLayoutManagerFactoryService
 } from 'ilpn-components';
 import {FlexLayoutModule} from '@angular/flex-layout';
@@ -23,6 +24,7 @@ import {GraphBarComponent} from './cumulative-slider/graph-bar/graph-bar.compone
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {SliderGridRowPipe} from './cumulative-slider/pipes/slider-grid-row.pipe';
 import {GraphBarRowPipe} from './cumulative-slider/pipes/graph-bar-row.pipe';
+import {AppRoutingModule} from "./app-routing.module";
 
 @NgModule({
     declarations: [
@@ -33,8 +35,10 @@ import {GraphBarRowPipe} from './cumulative-slider/pipes/graph-bar-row.pipe';
         GraphBarRowPipe
     ],
     imports: [
+        AppRoutingModule,
         BrowserModule,
         IlpnComponentsModule,
+        PnDisplayModule,
         IlpnAlgorithmsModule.withDebugConfig({
             logRegions: true
         }),
