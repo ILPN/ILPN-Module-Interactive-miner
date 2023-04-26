@@ -25,6 +25,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {SliderGridRowPipe} from './cumulative-slider/pipes/slider-grid-row.pipe';
 import {GraphBarRowPipe} from './cumulative-slider/pipes/graph-bar-row.pipe';
 import {AppRoutingModule} from "./app-routing.module";
+import {MatIconModule} from "@angular/material/icon";
+import {MatButtonModule} from "@angular/material/button";
 
 @NgModule({
     declarations: [
@@ -53,6 +55,8 @@ import {AppRoutingModule} from "./app-routing.module";
         MatCheckboxModule,
         MatButtonToggleModule,
         MatProgressSpinnerModule,
+        MatIconModule,
+        MatButtonModule,
     ],
     providers: [
         {

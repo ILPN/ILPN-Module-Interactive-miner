@@ -149,6 +149,11 @@ export class AppComponent implements OnDestroy {
         }
     }
 
+    clearMinerCache() {
+        this._incrementalMinerWeights.clearCache();
+        this._incrementalMinerNoWeights.clearCache();
+    }
+
     private mineModel() {
         if (this._selectedIndices === undefined || this._selectedIndices.length === 0) {
             console.debug('No spec indices selected');
