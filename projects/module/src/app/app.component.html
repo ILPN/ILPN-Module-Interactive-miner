@@ -18,6 +18,14 @@
 
                 <div flexLayout="column" flexLayoutAlign="start stretch" class="border-color content-inner">
                     <div flexLayout="row" flexLayoutAlign="space-between center" class="width-100">
+                        <div fxFlex fxLayoutAlign="start center">partial orders</div>
+                        <div fxLayout="row" fxLayoutAlign="end center">
+                            <span>off</span>
+                            <mat-slide-toggle [formControl]="fcConvertToPOs" class="side-margin"></mat-slide-toggle>
+                            <span>on</span>
+                        </div>
+                    </div>
+                    <div flexLayout="row" flexLayoutAlign="space-between center" class="width-100">
                         <div fxFlex fxLayoutAlign="start center">incremental synthesis</div>
                         <div fxLayout="row" fxLayoutAlign="end center">
                             <span>off</span>

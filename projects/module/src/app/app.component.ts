@@ -2,6 +2,7 @@ import {Component, OnDestroy} from '@angular/core';
 import {
     AlphaOracleService,
     cleanLog,
+    ConcurrencyRelation,
     DropFile,
     FD_LOG,
     FD_PETRI_NET,
@@ -15,7 +16,7 @@ import {
     Trace,
     XesLogParserService
 } from 'ilpn-components';
-import {BehaviorSubject, map, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, map, Subscription} from 'rxjs';
 import {FormControl} from '@angular/forms';
 
 
@@ -28,17 +29,14 @@ export class AppComponent implements OnDestroy {
 
     private readonly _incrementalMinerNoWeights: IncrementalMiner;
     private readonly _incrementalMinerWeights: IncrementalMiner;
+    private readonly _subs: Array<Subscription> = [];
     private _minerSub: Subscription | undefined;
-    private _modelSub: Subscription;
     private _displayedIndex = -1;
     private _selectedIndices?: Array<number>;
-    private _fcIncrementalSub: Subscription;
-    private _fcWeightsSub: Subscription;
+    private _log$: BehaviorSubject<Array<Trace>>;
 
     fdLog = FD_LOG;
     fdPN = FD_PETRI_NET;
-
-    log: Array<Trace> | undefined;
 
     displayedModel$: BehaviorSubject<PetriNet>;
     model$: BehaviorSubject<PetriNet>;
@@ -47,6 +45,7 @@ export class AppComponent implements OnDestroy {
 
     svgHeight = '800px';
 
+    fcConvertToPOs: FormControl;
     fcIncremental: FormControl;
     fcArcWeights: FormControl;
 
@@ -58,17 +57,19 @@ export class AppComponent implements OnDestroy {
                 private _serialisationService: PetriNetSerialisationService,
                 private _regionMiner: PetriNetRegionSynthesisService,
                 minerFactory: IncrementalMinerFactoryService) {
+        this.fcConvertToPOs = new FormControl(true);
         this.fcIncremental = new FormControl(true);
         this.fcArcWeights = new FormControl(false);
         this.model$ = new BehaviorSubject<PetriNet>(new PetriNet());
         this.displayedModel$ = new BehaviorSubject<PetriNet>(new PetriNet());
-        this._modelSub = this.model$.subscribe(net => {
+        this._subs.push(this.model$.subscribe(net => {
             if (net.isEmpty()) {
                 this.file = undefined;
             } else {
                 this.file = new DropFile('model.pn', this._serialisationService.serialise(net));
             }
-        })
+        }));
+        this._log$ = new BehaviorSubject<Array<Trace>>([]);
         this.pos$ = new BehaviorSubject<Array<PetriNet>>([]);
         this.loading$ = new BehaviorSubject<boolean>(false);
 
@@ -76,24 +77,30 @@ export class AppComponent implements OnDestroy {
         this._incrementalMinerNoWeights = minerFactory.create(this.pos$.asObservable());
         this._incrementalMinerWeights = minerFactory.create(this.pos$.asObservable());
 
-        this._fcIncrementalSub = this.fcIncremental.valueChanges.subscribe(() => {
+        this._subs.push(this.fcIncremental.valueChanges.subscribe(() => {
             this.mineModel();
-        });
-        this._fcWeightsSub = this.fcArcWeights.valueChanges.subscribe(() => {
+        }));
+        this._subs.push(this.fcArcWeights.valueChanges.subscribe(() => {
             this.mineModel();
-        });
+        }));
+        this._subs.push(combineLatest([this._log$.asObservable(), this.fcConvertToPOs.valueChanges]).subscribe( ([log, convertToPos]) => {
+            this.processLog(log, convertToPos);
+        }));
+        // valueChanges must emit at least once, so that combineLatest works
+        this.fcConvertToPOs.setValue(this.fcConvertToPOs.value);
     }
 
     ngOnDestroy(): void {
         if (this._minerSub) {
             this._minerSub.unsubscribe();
         }
-        this._modelSub.unsubscribe();
-        this._fcIncrementalSub.unsubscribe();
-        this._fcWeightsSub.unsubscribe();
+        for (const sub of this._subs) {
+            sub.unsubscribe();
+        }
 
         this.model$.complete();
         this.displayedModel$.complete();
+        this._log$.complete();
         this.pos$.complete();
         this.loading$.complete();
     }
@@ -101,16 +108,12 @@ export class AppComponent implements OnDestroy {
     processUpload(files: Array<DropFile>) {
         this.loading$.next(true);
 
-        this.log = this._logParser.parse(files[0].content);
-        this.log = cleanLog(this.log);
-        if (this.log !== undefined) {
-            const concurrency = this._oracle.determineConcurrency(this.log, {
-                lookAheadDistance: 1,
-                distinguishSameLabels: false
-            });
-            const pos = this._poTransformer.transformToPartialOrders(this.log, concurrency, {discardPrefixes: true}).map(po => po.net);
-            pos.sort((a, b) => b.frequency! - a.frequency!);
-            this.pos$.next(pos);
+        let log = this._logParser.parse(files[0].content);
+        log = cleanLog(log);
+        if (log !== undefined) {
+            this._log$.next(log);
+        } else {
+            this._log$.next([]);
         }
         this.loading$.next(false);
     }
@@ -152,6 +155,22 @@ export class AppComponent implements OnDestroy {
     clearMinerCache() {
         this._incrementalMinerWeights.clearCache();
         this._incrementalMinerNoWeights.clearCache();
+    }
+
+    private processLog(log: Array<Trace>, convertToPOs: boolean) {
+        let concurrency: ConcurrencyRelation;
+        if (convertToPOs) {
+            concurrency = this._oracle.determineConcurrency(log, {
+                lookAheadDistance: 1,
+                distinguishSameLabels: false
+            });
+        } else {
+            concurrency = ConcurrencyRelation.noConcurrency();
+        }
+
+        const pos = this._poTransformer.transformToPartialOrders(log, concurrency, {discardPrefixes: true}).map(po => po.net);
+        pos.sort((a, b) => b.frequency! - a.frequency!);
+        this.pos$.next(pos);
     }
 
     private mineModel() {
