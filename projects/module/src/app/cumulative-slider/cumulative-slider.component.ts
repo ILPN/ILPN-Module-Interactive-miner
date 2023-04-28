@@ -129,6 +129,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
         this._model = undefined;
         this._selected = new Set(this.buttons.length > 0 ? [0] : []);
         this.emitSelectionUpdate();
+        this.cancelSelection();
         this.sizeChanged.emit(18 * this.buttons.length + 27);
         this._oldSliderValue = 0;
         this.fcSlider.setValue(0);
