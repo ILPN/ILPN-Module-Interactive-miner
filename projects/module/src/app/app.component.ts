@@ -35,6 +35,8 @@ export class AppComponent implements OnDestroy {
     private _selectedIndices?: Array<number>;
     private _log$: BehaviorSubject<Array<Trace>>;
 
+    firstLogUploaded = false;
+
     fdLog = FD_LOG;
     fdPN = FD_PETRI_NET;
 
@@ -171,6 +173,9 @@ export class AppComponent implements OnDestroy {
         const pos = this._poTransformer.transformToPartialOrders(log, concurrency, {discardPrefixes: true}).map(po => po.net);
         pos.sort((a, b) => b.frequency! - a.frequency!);
         this.pos$.next(pos);
+        if (pos.length > 0) {
+            this.firstLogUploaded = true;
+        }
     }
 
     private mineModel() {

@@ -22,11 +22,14 @@ hr {
     width: 100%;
 }
 
+.hide-border {
+    border-style: none !important;
+}
+
 .content-wrapper {
     position: relative;
     border-style: dotted;
     border-color: #d3d3d3;
-    //min-height: 800px;
 }
 
 .border-color {
@@ -73,4 +76,16 @@ hr {
 
 .button-margin {
     margin-right: 20px;
+}
+
+.padding-left {
+    padding-left: 8px;
+}
+
+.setting-line {
+    height: 32px;
+}
+
+.setting-min-width {
+    min-width: 24em;
 }
