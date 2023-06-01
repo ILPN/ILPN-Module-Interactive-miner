@@ -9,6 +9,7 @@ import {
     IncrementalMiner,
     IncrementalMinerFactoryService,
     LogToPartialOrderTransformerService,
+    PartialOrderToPetriNetTransformerService,
     PetriNet,
     PetriNetRegionSynthesisService,
     PetriNetSerialisationService,
@@ -56,6 +57,7 @@ export class AppComponent implements OnDestroy {
     constructor(private _logParser: XesLogParserService,
                 private _oracle: AlphaOracleService,
                 private _poTransformer: LogToPartialOrderTransformerService,
+                private _pnTransformer: PartialOrderToPetriNetTransformerService,
                 private _serialisationService: PetriNetSerialisationService,
                 private _regionMiner: PetriNetRegionSynthesisService,
                 minerFactory: IncrementalMinerFactoryService) {
@@ -170,8 +172,14 @@ export class AppComponent implements OnDestroy {
             concurrency = ConcurrencyRelation.noConcurrency();
         }
 
-        const pos = this._poTransformer.transformToPartialOrders(log, concurrency, {discardPrefixes: true}).map(po => po.net);
-        pos.sort((a, b) => b.frequency! - a.frequency!);
+        const pos = this._poTransformer.transformToPartialOrders(log, concurrency, {discardPrefixes: true}).map(po => this._pnTransformer.transform(po));
+        pos.sort((a, b) => {
+            const diff = b.frequency! - a.frequency!;
+            if (diff !== 0) {
+                return diff;
+            }
+            return a.getTransitionCount() - b.getTransitionCount();
+        });
         this.pos$.next(pos);
         if (pos.length > 0) {
             this.firstLogUploaded = true;
