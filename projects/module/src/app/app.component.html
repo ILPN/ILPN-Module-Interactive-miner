@@ -7,24 +7,25 @@
 
     <hr>
 
-    <div class="content-wrapper" [ngClass]="{'hide-border': !firstLogUploaded}">
-        <div class="loading-blocker" *ngIf="loading$ | async" fxLayoutAlign="center center">
-            <mat-spinner color="accent"></mat-spinner>
-        </div>
-
+    <div [ngClass]="{'hide-border': !firstLogUploaded}">
         <div *ngIf="!firstLogUploaded; else mainContent" class="width-100" fxLayoutAlign="center center">
             <ilpn-file-upload [fileDisplay]="fdLog" descriptionText="Drop a XES log file here" (fileContent)="processUpload($event)"></ilpn-file-upload>
         </div>
 
         <ng-template #mainContent>
             <div flexLayout="row" flexLayoutAlign="start start">
-                <ilpn-pn-display fxFlex="85" class="border-color display-border sticky-drawing-area" [petriNet$]="displayedModel$"></ilpn-pn-display>
+                <ilpn-pn-display fxFlex="85" class="border-color display-border sticky-drawing-area" [petriNet$]="displayedModel$">
+                    <div class="loading-blocker" *ngIf="loading$ | async" fxLayoutAlign="center center">
+                        <mat-spinner color="accent"></mat-spinner>
+                    </div>
+                </ilpn-pn-display>
 
                 <app-cumulative-slider class="border-color slider-border" fxFlex="15"
                                        [pos$]="pos$"
                                        [model$]="model$"
                                        (selectionUpdate)="updateModel($event)"
                                        (modelSelected)="changeModelDisplay($event)">
+                    <div class="loading-blocker" *ngIf="loading$ | async"></div>
                 </app-cumulative-slider>
             </div>
         </ng-template>
