@@ -46,8 +46,6 @@ export class AppComponent implements OnDestroy {
     pos$: BehaviorSubject<Array<PetriNet>>;
     file: DropFile | undefined;
 
-    svgHeight = '800px';
-
     fcConvertToPOs: FormControl;
     fcIncremental: FormControl;
     fcArcWeights: FormControl;
@@ -130,14 +128,6 @@ export class AppComponent implements OnDestroy {
 
         this._selectedIndices = selectedIndices;
         this.mineModel();
-    }
-
-    svgSizeChange(newHeight: number) {
-        if (newHeight < 800) {
-            this.svgHeight = '800px';
-        } else {
-            this.svgHeight = `${newHeight}px`;
-        }
     }
 
     private emitNext(model: PetriNet) {

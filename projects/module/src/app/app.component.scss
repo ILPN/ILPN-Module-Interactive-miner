@@ -28,27 +28,28 @@ hr {
 
 .content-wrapper {
     position: relative;
-    border-style: dotted;
-    border-color: #d3d3d3;
 }
 
 .border-color {
     border-color: #d3d3d3;
 }
 
-.content-left {
-    border-right-style: dotted;
+.slider-border {
+    border-style: dotted;
     min-width: 19em;
+
+    min-height: 95vh;
 }
 
-.content-right {
+.sticky-drawing-area {
     border-left-style: dotted;
-    min-width: 15em;
-}
-
-.content-inner {
     border-top-style: dotted;
-    margin-top: 16px;
+    border-bottom-style: dotted;
+
+    top: 2.5vh;
+    position: sticky;
+    min-height: 95vh;
+    max-height: 95vh;
 }
 
 .side-margin {
