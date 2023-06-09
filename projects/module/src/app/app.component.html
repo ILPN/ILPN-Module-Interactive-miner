@@ -1,8 +1,8 @@
 <ilpn-page-layout>
     <h2>
-        A tool for exploratory process discovery utilising Petri net regions - This tool is submitted as
-        <br><i>A Second Glimpse at Petri Net Regions - A Tool for Exploratory Process Discovery</i> by J. Kovář, S. Folz-Weinstein and R. Bergenthum
-        <br>to ATAED 2023.
+        A tool for exploratory process discovery for Petri nets utilising Petri net regions - This tool is submitted as
+        <br><i>Exploratory Process Discovery for Petri Nets</i> by J. Kovář, S. Folz-Weinstein and R. Bergenthum
+        <br>to ICPM 2023.
     </h2>
 
     <hr>
@@ -78,12 +78,17 @@
         <div>
             <h2>download examples</h2>
             <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayout.sm="column" fxLayoutAlign.sm="space-between center">
-                <ilpn-descriptive-link [fileDisplay]="fdLog" title="Extended repair example" description="The repair example [1] with an additional, not-matching trace." link="assets/repairExampleNoise.xes" [download]="true"></ilpn-descriptive-link>
-                <ilpn-descriptive-link [fileDisplay]="fdLog" title="Repair example" description="The repair example from the ProM Tools tutorial [1]." link="assets/repairExample.xes" [download]="true"></ilpn-descriptive-link>
+                <ilpn-descriptive-link [fileDisplay]="fdLog" title="Extended repair example" description="The repair example [1] with an additional, non-matching trace." link="assets/extendedRepairExample.xes" [download]="true"></ilpn-descriptive-link>
+<!--                <ilpn-descriptive-link [fileDisplay]="fdLog" title="Repair example" description="The repair example from the ProM Tools tutorial [1]." link="assets/repairExample.xes" [download]="true"></ilpn-descriptive-link>-->
+                <ilpn-descriptive-link [fileDisplay]="fdLog" title="Teleclaims example" description="The teleclaims example introduced in Chapter 8 of [2]." link="assets/teleclaimsExample.xes" [download]="true"></ilpn-descriptive-link>
+                <ilpn-descriptive-link [fileDisplay]="fdLog" title="PDC 2020 config. 1200000" description="Log from the Process Discovery Contest 2020 data set [3]." link="assets/pdc_2020_1200000.xes" [download]="true"></ilpn-descriptive-link>
+<!--                <ilpn-descriptive-link [fileDisplay]="fdLog" title="PDC 2020 - 1101000" description="Log from the Process Discovery Contest 2020 data set [3]." link="assets/pdc2020_1101000.xes" [download]="true"></ilpn-descriptive-link>-->
             </div>
 
-            <br>
-            <span class="padding-left">[1] example XES files were adapted from the originals used in the <a href="https://promtools.org/prom-documentation/">ProM Tools tutorial</a>. The original files can be downloaded <a href="https://promtools.org/?smd_process_download=1&download_id=161">here</a></span>
+
+            <br><span class="padding-left">[1] example XES files were adapted from the originals used in the <a href="https://promtools.org/prom-documentation/">ProM Tools tutorial</a>. The original files can be downloaded <a href="https://promtools.org/?smd_process_download=1&download_id=161">here</a></span>
+            <br><span class="padding-left">[2] <a href="https://link.springer.com/book/10.1007/978-3-662-49851-4">Process Mining: Data Science in Action</a> by Wil van der Aalst. The original files can be downloaded <a href="http://processmining.org/old-version/event-book.html">here</a></span>
+            <br><span class="padding-left">[3] the logs of the PDC 2020 data set were generated using a <a href="https://icpmconference.org/2020/wp-content/uploads/sites/4/2020/10/PDC-2020.pdf">master model</a> and seven configuration parameters. The explanation of the parameters and the full data set can be found <a href="https://icpmconference.org/2020/process-discovery-contest/data-set/">here</a></span>
         </div>
     </div>
 </ilpn-page-layout>
