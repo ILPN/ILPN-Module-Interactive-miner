@@ -1,9 +1,14 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" class="height-100 width-100" (click)="cancelSelection()">
-    <div fxLayout="row" fxLayoutAlign="end center" class="detail-area">
+    <div fxLayout="row" fxLayoutAlign="end center" class="detail-area-toggle">
         <span>absolute</span>
         <mat-slide-toggle [formControl]="fcCumulative" class="side-margin"></mat-slide-toggle>
         <span>cumulative</span>
     </div>
+    <div fxLayout="row" fxLayoutAlign="start center" class="detail-area-select-all">
+        <input type="checkbox" class="checkbox-margin" fxFlexAlign="center" [formControl]="fcSelectAll" (change)="selectAllChanged()">
+        <span>select all</span>
+    </div>
+
     <div gdColumns="48px auto" class="width-100 height-100">
         <mat-slider invert min="0" [max]="buttons.length - 1" step="1" vertical class="height-100"
                     [formControl]="fcSlider" [gdRow]="buttons | sliderGridRow" gdColumn="1"></mat-slider>

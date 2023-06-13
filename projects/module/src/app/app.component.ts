@@ -187,11 +187,15 @@ export class AppComponent implements OnDestroy {
         };
 
         this.loading$.next(true);
+
+        const mineStart = performance.now();
+
         if (this.fcIncremental.value) {
             const miner = this.fcArcWeights.value ? this._incrementalMinerWeights : this._incrementalMinerNoWeights;
             this._minerSub = miner.mine(this._selectedIndices, config).subscribe(net => {
                 this.emitNext(net);
                 this.loading$.next(false);
+                console.debug(`Miner time elapsed ${performance.now() - mineStart}ms`);
             });
         } else {
             const pos = [];
@@ -207,6 +211,7 @@ export class AppComponent implements OnDestroy {
                 .subscribe(net => {
                     this.emitNext(net);
                     this.loading$.next(false);
+                    console.debug(`Miner time elapsed ${performance.now() - mineStart}ms`);
                 });
         }
     }

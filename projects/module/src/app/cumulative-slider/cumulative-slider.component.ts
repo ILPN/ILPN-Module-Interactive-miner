@@ -32,6 +32,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
     public cumulative = false;
     public fcCumulative: FormControl;
     public fcSlider: FormControl;
+    public fcSelectAll: FormControl;
 
     @Input()
     public model$: Observable<PetriNet | undefined> | undefined;
@@ -53,29 +54,34 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
         this.selectionUpdate = new EventEmitter<Array<number>>();
         this.sizeChanged = new EventEmitter<number>();
         this.modelSelected = new EventEmitter<number>();
+
         this.fcCumulative = new FormControl(this.cumulative);
         this._fcCumulativeSub = this.fcCumulative.valueChanges.subscribe(v => {
             this.cumulative = v;
         });
+
         this.fcSlider = new FormControl(0);
         this.fcSlider.disable();
         this._fcSliderSub = this.fcSlider.valueChanges.pipe(debounceTime(500)).subscribe(i => {
             if (i > this._oldSliderValue) {
                 for (let j = this._oldSliderValue + 1; j <= i; j++) {
-                    this.buttons[j].fc.setValue(true);
-                    this.buttons[j].state = ButtonState.SELECTED;
-                    this._selected.add(j);
+                    this.select(j);
                 }
             } else {
                 for (let j = i + 1; j <= this._oldSliderValue; j++) {
-                    this.buttons[j].fc.setValue(false);
-                    this.buttons[j].state = ButtonState.DESELECTED;
-                    this._selected.delete(j);
+                    this.deselect(j);
                 }
             }
             this._oldSliderValue = i;
+
+            if (this._selected.size !== this.buttons.length) {
+                this.fcSelectAll.setValue(false);
+            }
+
             this.emitSelectionUpdate();
         });
+
+        this.fcSelectAll = new FormControl(false);
     }
 
     ngOnInit(): void {
@@ -165,6 +171,11 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
             this._selected.delete(index);
             this.buttons[index].state = ButtonState.DESELECTED;
         }
+
+        if (this._selected.size !== this.buttons.length) {
+            this.fcSelectAll.setValue(false);
+        }
+
         this.emitSelectionUpdate();
     }
 
@@ -206,4 +217,27 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
         this.selectionUpdate.emit(Array.from(this._selected).sort((a, b) => a - b));
     }
 
+    private select(i: number) {
+        this.buttons[i].fc.setValue(true);
+        this.buttons[i].state = ButtonState.SELECTED;
+        this._selected.add(i);
+    }
+
+    private deselect(i: number) {
+        this.buttons[i].fc.setValue(false);
+        this.buttons[i].state = ButtonState.DESELECTED;
+        this._selected.delete(i);
+    }
+
+    public selectAllChanged() {
+        if (this.fcSelectAll.value === false) {
+            return;
+        }
+
+        for (let i = 0; i < this.buttons.length; i++) {
+            this.select(i);
+        }
+
+        this.emitSelectionUpdate();
+    }
 }
