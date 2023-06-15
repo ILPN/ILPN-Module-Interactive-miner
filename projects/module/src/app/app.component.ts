@@ -183,8 +183,7 @@ export class AppComponent implements OnDestroy {
         }
 
         const config: RegionsConfiguration = {
-            noArcWeights: !this.fcArcWeights.value,
-            runtimeLimit: 20 * 1000, //ms
+            noArcWeights: !this.fcArcWeights.value
         };
 
         this.loading$.next(true);
@@ -193,14 +192,10 @@ export class AppComponent implements OnDestroy {
 
         if (this.fcIncremental.value) {
             const miner = this.fcArcWeights.value ? this._incrementalMinerWeights : this._incrementalMinerNoWeights;
-            this._minerSub = miner.mine(this._selectedIndices, config).subscribe(([net, m]) => {
+            this._minerSub = miner.mine(this._selectedIndices, config).subscribe(net => {
                 this.emitNext(net);
                 this.loading$.next(false);
                 console.debug(`Miner time elapsed ${performance.now() - mineStart}ms`);
-                console.debug(m);
-                console.debug(
-                    m.map(e => `${e.trace},${e.totalPlaces},${e.reducedPlaces},${e.time},${e.regions}`).join('\n')
-                );
             });
         } else {
             const pos = [];
