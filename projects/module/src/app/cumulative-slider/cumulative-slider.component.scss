@@ -6,14 +6,19 @@
     width: 100%;
 }
 
-.detail-area {
-    border-bottom-style: dotted;
-    border-color: #d3d3d3;
+.detail-area-toggle {
     height: 27px;
 }
 
+.detail-area-select-all {
+    border-bottom-style: dotted;
+    border-color: #d3d3d3;
+
+}
+
 .checkbox-margin {
-    margin: 2px;
+    margin-left: 48px;
+    margin-right: 4px;
 }
 
 .side-margin {
