@@ -61,7 +61,7 @@ export class AppComponent implements OnDestroy {
                 minerFactory: IncrementalMinerFactoryService) {
         this.fcConvertToPOs = new FormControl(true);
         this.fcIncremental = new FormControl(true);
-        this.fcArcWeights = new FormControl(false);
+        this.fcArcWeights = new FormControl(true);
         this.model$ = new BehaviorSubject<PetriNet>(new PetriNet());
         this.displayedModel$ = new BehaviorSubject<PetriNet>(new PetriNet());
         this._subs.push(this.model$.subscribe(net => {
