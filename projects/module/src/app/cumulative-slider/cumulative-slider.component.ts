@@ -25,6 +25,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
     private _model?: PetriNet;
     private _oldSliderValue = 0;
     private _selected: Set<number>;
+    private _selectedBeforeAll: Set<number>;
 
     public buttons: Array<ButtonConfig> = [];
     public total = 0;
@@ -51,6 +52,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
 
     constructor(private _pnToPoTransformer: PetriNetToPartialOrderTransformerService) {
         this._selected = new Set<number>();
+        this._selectedBeforeAll = new Set<number>();
         this.selectionUpdate = new EventEmitter<Array<number>>();
         this.sizeChanged = new EventEmitter<number>();
         this.modelSelected = new EventEmitter<number>();
@@ -230,12 +232,20 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
     }
 
     public selectAllChanged() {
-        if (this.fcSelectAll.value === false) {
-            return;
-        }
+        if (this.fcSelectAll.value === true) {
+            this._selectedBeforeAll = new Set<number>(this._selected);
 
-        for (let i = 0; i < this.buttons.length; i++) {
-            this.select(i);
+            for (let i = 0; i < this.buttons.length; i++) {
+                this.select(i);
+            }
+        } else {
+            for (let i = 0; i < this.buttons.length; i++) {
+                this.deselect(i);
+            }
+
+            for (let i of this._selectedBeforeAll) {
+                this.select(i);
+            }
         }
 
         this.emitSelectionUpdate();
