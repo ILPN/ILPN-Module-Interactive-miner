@@ -7,6 +7,6 @@ export interface ButtonConfig {
     absolute: number;
     cumulated: number;
     state: ButtonState;
-    fc: FormControl<boolean>;
+    fc: FormControl<boolean | null>;
     selected: boolean;
 }
