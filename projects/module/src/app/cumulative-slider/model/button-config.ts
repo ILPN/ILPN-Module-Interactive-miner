@@ -1,4 +1,4 @@
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from '@angular/forms';
 import {ButtonState} from './button-state';
 
 
@@ -7,6 +7,6 @@ export interface ButtonConfig {
     absolute: number;
     cumulated: number;
     state: ButtonState;
-    fc: UntypedFormControl;
+    fc: FormControl<boolean>;
     selected: boolean;
 }

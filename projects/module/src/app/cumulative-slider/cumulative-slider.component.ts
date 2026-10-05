@@ -5,7 +5,7 @@ import {
     PetriNetToPartialOrderTransformerService
 } from 'ilpn-components';
 import {debounceTime, Observable, Subscription} from 'rxjs';
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from "@angular/forms";
 import {ButtonConfig} from './model/button-config';
 import {ButtonState} from './model/button-state';
 
@@ -31,9 +31,9 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
     public total = 0;
     public maximum = 0;
     public cumulative = false;
-    public fcCumulative: UntypedFormControl;
-    public fcSlider: UntypedFormControl;
-    public fcSelectAll: UntypedFormControl;
+    public fcCumulative = new FormControl(false);
+    public fcSlider = new FormControl(0);
+    public fcSelectAll = new FormControl(false);
 
     @Input()
     public model$: Observable<PetriNet | undefined> | undefined;
@@ -57,14 +57,14 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
         this.sizeChanged = new EventEmitter<number>();
         this.modelSelected = new EventEmitter<number>();
 
-        this.fcCumulative = new UntypedFormControl(this.cumulative);
+        this.fcCumulative.setValue(this.cumulative);
         this._fcCumulativeSub = this.fcCumulative.valueChanges.subscribe(v => {
-            this.cumulative = v;
+            this.cumulative = v ?? false;
         });
 
-        this.fcSlider = new UntypedFormControl(0);
         this.fcSlider.disable();
         this._fcSliderSub = this.fcSlider.valueChanges.pipe(debounceTime(500)).subscribe(i => {
+            i = i ?? 0;
             if (i > this._oldSliderValue) {
                 for (let j = this._oldSliderValue + 1; j <= i; j++) {
                     this.select(j);
@@ -82,8 +82,6 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
 
             this.emitSelectionUpdate();
         });
-
-        this.fcSelectAll = new UntypedFormControl(false);
     }
 
     ngOnInit(): void {
@@ -157,7 +155,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
                 absolute: po.frequency!,
                 cumulated: runningTotal + po.frequency!,
                 state: ButtonState.DESELECTED,
-                fc: new UntypedFormControl(false),
+                fc: new FormControl(false),
                 selected: false,
             };
             runningTotal += po.frequency!;

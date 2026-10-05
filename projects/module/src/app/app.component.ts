@@ -18,7 +18,7 @@ import {
     XesLogParserService
 } from 'ilpn-components';
 import {BehaviorSubject, combineLatest, map, Subscription} from 'rxjs';
-import {UntypedFormControl} from '@angular/forms';
+import {FormControl} from "@angular/forms";
 
 
 @Component({
@@ -46,9 +46,9 @@ export class AppComponent implements OnDestroy {
     pos$: BehaviorSubject<Array<PetriNet>>;
     file: DropFile | undefined;
 
-    fcConvertToPOs: UntypedFormControl;
-    fcIncremental: UntypedFormControl;
-    fcArcWeights: UntypedFormControl;
+    fcConvertToPOs = new FormControl(true);
+    fcIncremental = new FormControl(true);
+    fcArcWeights = new FormControl(true);
 
     loading$: BehaviorSubject<boolean>;
 
@@ -59,9 +59,6 @@ export class AppComponent implements OnDestroy {
                 private _serialisationService: PetriNetSerialisationService,
                 private _regionMiner: PetriNetRegionSynthesisService,
                 minerFactory: IncrementalMinerFactoryService) {
-        this.fcConvertToPOs = new UntypedFormControl(true);
-        this.fcIncremental = new UntypedFormControl(true);
-        this.fcArcWeights = new UntypedFormControl(true);
         this.model$ = new BehaviorSubject<PetriNet>(new PetriNet());
         this.displayedModel$ = new BehaviorSubject<PetriNet>(new PetriNet());
         this._subs.push(this.model$.subscribe(net => {
