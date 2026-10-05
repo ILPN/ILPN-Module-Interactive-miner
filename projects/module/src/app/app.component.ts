@@ -83,7 +83,7 @@ export class AppComponent implements OnDestroy {
             this.mineModel();
         }));
         this._subs.push(combineLatest([this._log$.asObservable(), this.fcConvertToPOs.valueChanges]).subscribe( ([log, convertToPos]) => {
-            this.processLog(log, convertToPos);
+            this.processLog(log, convertToPos ?? true);
         }));
         // valueChanges must emit at least once, so that combineLatest works
         this.fcConvertToPOs.setValue(this.fcConvertToPOs.value);
