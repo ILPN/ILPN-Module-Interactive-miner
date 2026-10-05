@@ -5,7 +5,7 @@ import {
     PetriNetToPartialOrderTransformerService
 } from 'ilpn-components';
 import {debounceTime, Observable, Subscription} from 'rxjs';
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 import {ButtonConfig} from './model/button-config';
 import {ButtonState} from './model/button-state';
 
@@ -31,9 +31,9 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
     public total = 0;
     public maximum = 0;
     public cumulative = false;
-    public fcCumulative: FormControl;
-    public fcSlider: FormControl;
-    public fcSelectAll: FormControl;
+    public fcCumulative: UntypedFormControl;
+    public fcSlider: UntypedFormControl;
+    public fcSelectAll: UntypedFormControl;
 
     @Input()
     public model$: Observable<PetriNet | undefined> | undefined;
@@ -57,12 +57,12 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
         this.sizeChanged = new EventEmitter<number>();
         this.modelSelected = new EventEmitter<number>();
 
-        this.fcCumulative = new FormControl(this.cumulative);
+        this.fcCumulative = new UntypedFormControl(this.cumulative);
         this._fcCumulativeSub = this.fcCumulative.valueChanges.subscribe(v => {
             this.cumulative = v;
         });
 
-        this.fcSlider = new FormControl(0);
+        this.fcSlider = new UntypedFormControl(0);
         this.fcSlider.disable();
         this._fcSliderSub = this.fcSlider.valueChanges.pipe(debounceTime(500)).subscribe(i => {
             if (i > this._oldSliderValue) {
@@ -83,7 +83,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
             this.emitSelectionUpdate();
         });
 
-        this.fcSelectAll = new FormControl(false);
+        this.fcSelectAll = new UntypedFormControl(false);
     }
 
     ngOnInit(): void {
@@ -157,7 +157,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
                 absolute: po.frequency!,
                 cumulated: runningTotal + po.frequency!,
                 state: ButtonState.DESELECTED,
-                fc: new FormControl(false),
+                fc: new UntypedFormControl(false),
                 selected: false,
             };
             runningTotal += po.frequency!;
