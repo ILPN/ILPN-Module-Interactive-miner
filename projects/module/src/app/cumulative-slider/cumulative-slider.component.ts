@@ -8,6 +8,7 @@ import {debounceTime, Observable, Subscription} from 'rxjs';
 import {FormControl} from "@angular/forms";
 import {ButtonConfig} from './model/button-config';
 import {ButtonState} from './model/button-state';
+import {Options} from "@angular-slider/ngx-slider";
 
 
 @Component({
@@ -32,8 +33,9 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
     public maximum = 0;
     public cumulative = false;
     public fcCumulative = new FormControl(false);
-    public fcSlider = new FormControl(0);
+    public fcSlider = new FormControl(0); // we must invert the value ourselves! Indexed backwards
     public fcSelectAll = new FormControl(false);
+    public sliderOptions: Options = {};
 
     @Input()
     public model$: Observable<PetriNet | undefined> | undefined;
@@ -64,7 +66,11 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
 
         this.fcSlider.disable();
         this._fcSliderSub = this.fcSlider.valueChanges.pipe(debounceTime(500)).subscribe(i => {
-            i = i ?? 0;
+            i = i ?? this.buttons.length - 1;
+
+            // invert value
+            i = this.buttons.length - 1 - i;
+
             if (i > this._oldSliderValue) {
                 for (let j = this._oldSliderValue + 1; j <= i; j++) {
                     this.select(j);
@@ -138,7 +144,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
         this.cancelSelection();
         this.sizeChanged.emit(18 * this.buttons.length + 27);
         this._oldSliderValue = 0;
-        this.fcSlider.setValue(0);
+        this.updateSliderOptions();
         if (this.buttons.length > 0) {
             this.buttons[0].fc.setValue(true);
             this.fcSlider.enable();
@@ -247,5 +253,18 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
         }
 
         this.emitSelectionUpdate();
+    }
+
+    private updateSliderOptions() {
+        this.sliderOptions = {
+            vertical: true,
+            floor: 0,
+            ceil: this.buttons.length - 1,
+            showSelectionBarEnd: true,
+            translate: (value: number): string => {
+                return '';
+            }
+        }
+        this.fcSlider.setValue(this.buttons.length - 1);
     }
 }

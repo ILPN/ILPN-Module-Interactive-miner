@@ -14,7 +14,6 @@ import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {APP_BASE_HREF, PlatformLocation} from '@angular/common';
 import {CumulativeSliderComponent} from './cumulative-slider/cumulative-slider.component';
-import {MatSliderModule} from "@angular/material/slider";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {MatRadioModule} from "@angular/material/radio";
@@ -27,6 +26,7 @@ import {GraphBarRowPipe} from './cumulative-slider/pipes/graph-bar-row.pipe';
 import {AppRoutingModule} from "./app-routing.module";
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
+import {NgxSliderModule} from '@angular-slider/ngx-slider';
 
 @NgModule({
     declarations: [
@@ -48,7 +48,6 @@ import {MatButtonModule} from "@angular/material/button";
         ReactiveFormsModule,
         MatSlideToggleModule,
         BrowserAnimationsModule,
-        MatSliderModule,
         MatFormFieldModule,
         MatInputModule,
         MatRadioModule,
@@ -57,6 +56,7 @@ import {MatButtonModule} from "@angular/material/button";
         MatProgressSpinnerModule,
         MatIconModule,
         MatButtonModule,
+        NgxSliderModule,
     ],
     providers: [
         {
