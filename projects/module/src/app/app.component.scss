@@ -31,6 +31,15 @@ hr {
     border-width: 3px;
 }
 
+.right-border {
+    border-right-style: none;
+}
+@media (min-width: 960px) {
+    .right-border {
+        border-right-style: dotted;
+    }
+}
+
 .slider-border {
     border-style: dotted;
     min-width: 19em;
@@ -48,10 +57,6 @@ hr {
     position: sticky;
     min-height: 95vh;
     max-height: 95vh;
-}
-
-.right-border {
-    border-right-style: dotted;
 }
 
 .side-margin {
