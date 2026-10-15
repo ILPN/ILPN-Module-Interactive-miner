@@ -32,7 +32,7 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
     public total = 0;
     public maximum = 0;
     public cumulative = false;
-    public fcCumulative = new FormControl(false);
+    public fcCumulative = new FormControl<'absolute'|'cumulative'>('absolute');
     public fcSlider = new FormControl(0); // we must invert the value ourselves! Indexed backwards
     public fcSelectAll = new FormControl(false);
     public sliderOptions: Options = {};
@@ -59,9 +59,9 @@ export class CumulativeSliderComponent implements OnInit, OnDestroy {
         this.sizeChanged = new EventEmitter<number>();
         this.modelSelected = new EventEmitter<number>();
 
-        this.fcCumulative.setValue(this.cumulative);
+        this.fcCumulative.setValue(this.cumulative ? 'cumulative' : 'absolute');
         this._fcCumulativeSub = this.fcCumulative.valueChanges.subscribe(v => {
-            this.cumulative = v ?? false;
+            this.cumulative = v === 'cumulative';
         });
 
         this.fcSlider.disable();

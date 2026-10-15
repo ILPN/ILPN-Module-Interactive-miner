@@ -1,8 +1,12 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" class="height-100 width-100" (click)="cancelSelection()">
     <div fxLayout="row" fxLayoutAlign="end center" class="detail-area-toggle">
-        <span>absolute</span>
-        <mat-slide-toggle [formControl]="fcCumulative" class="side-margin"></mat-slide-toggle>
-        <span>cumulative</span>
+        <mat-button-toggle-group [formControl]="fcCumulative" aria-label="absolute/cumulative values">
+            <mat-button-toggle value="absolute">absolute</mat-button-toggle>
+            <mat-button-toggle value="cumulative">cumulative</mat-button-toggle>
+        </mat-button-toggle-group>
+<!--        <span>absolute</span>-->
+<!--        <mat-slide-toggle [formControl]="fcCumulative" class="side-margin"></mat-slide-toggle>-->
+<!--        <span>cumulative</span>-->
     </div>
     <div fxLayout="row" fxLayoutAlign="start center" class="detail-area-select-all">
         <input type="checkbox" class="checkbox-margin" fxFlexAlign="center" [formControl]="fcSelectAll" (change)="selectAllChanged()">

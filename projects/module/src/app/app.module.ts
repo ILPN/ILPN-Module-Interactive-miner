@@ -46,7 +46,7 @@ import {NgxSliderModule} from '@angular-slider/ngx-slider';
         }),
         FlexLayoutModule,
         ReactiveFormsModule,
-        MatSlideToggleModule,
+        MatSlideToggleModule, //
         BrowserAnimationsModule,
         MatFormFieldModule,
         MatInputModule,
