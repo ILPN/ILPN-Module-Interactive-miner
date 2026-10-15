@@ -11,7 +11,7 @@ import {
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {APP_BASE_HREF, CommonModule, PlatformLocation} from '@angular/common';
+import {APP_BASE_HREF, PlatformLocation} from '@angular/common';
 import {CumulativeSliderComponent} from './cumulative-slider/cumulative-slider.component';
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
@@ -55,7 +55,6 @@ import {NgxSliderModule} from '@angular-slider/ngx-slider';
         MatIconModule,
         MatButtonModule,
         NgxSliderModule,
-        CommonModule,
     ],
     providers: [
         {
