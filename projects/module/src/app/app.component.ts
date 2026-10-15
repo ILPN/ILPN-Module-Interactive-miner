@@ -13,6 +13,7 @@ import {
     PetriNet,
     PetriNetRegionSynthesisService,
     PetriNetSerialisationService,
+    PnOutputFileFormat,
     RegionsConfiguration,
     Trace,
     XesLogParserService
@@ -71,7 +72,7 @@ export class AppComponent implements OnDestroy {
             if (net.isEmpty()) {
                 this.file = undefined;
             } else {
-                this.file = new DropFile('model.pn', this._serialisationService.serialise(net));
+                this.file = new DropFile('model.json', this._serialisationService.serialise(net, PnOutputFileFormat.JSON));
             }
         }));
         this._log$ = new BehaviorSubject<Array<Trace>>([]);
