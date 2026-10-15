@@ -1,8 +1,7 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" class="height-100 width-100" (click)="cancelSelection()">
     <div fxLayout="row" fxLayoutAlign="end center" class="detail-area-toggle">
-        <span>absolute</span>
-        <mat-slide-toggle [formControl]="fcCumulative" class="side-margin"></mat-slide-toggle>
-        <span>cumulative</span>
+        <span id="cmltv" fxFlex>cumulative</span>
+        <mat-slide-toggle [formControl]="fcCumulative" fxFlex aria-labelledby="cmltv"></mat-slide-toggle>
     </div>
     <div fxLayout="row" fxLayoutAlign="start center" class="detail-area-select-all">
         <input type="checkbox" class="checkbox-margin" fxFlexAlign="center" [formControl]="fcSelectAll" (change)="selectAllChanged()">
@@ -10,8 +9,8 @@
     </div>
 
     <div gdColumns="48px auto" class="width-100 height-100">
-        <mat-slider invert min="0" [max]="buttons.length - 1" step="1" vertical class="height-100"
-                    [formControl]="fcSlider" [gdRow]="buttons | sliderGridRow" gdColumn="1"></mat-slider>
+        <ngx-slider [options]="sliderOptions" [formControl]="fcSlider"
+                    class="height-100" [gdRow]="buttons | sliderGridRow" gdColumn="1"></ngx-slider>
         <app-graph-bar *ngFor="let config of buttons; let i = index" class="width-100"
                        [config]="config"
                        [cumulative]="cumulative"

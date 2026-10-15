@@ -13,12 +13,13 @@ import {
     PetriNet,
     PetriNetRegionSynthesisService,
     PetriNetSerialisationService,
+    PnOutputFileFormat,
     RegionsConfiguration,
     Trace,
     XesLogParserService
 } from 'ilpn-components';
 import {BehaviorSubject, combineLatest, map, Subscription} from 'rxjs';
-import {FormControl} from '@angular/forms';
+import {FormControl} from "@angular/forms";
 
 
 @Component({
@@ -46,9 +47,9 @@ export class AppComponent implements OnDestroy {
     pos$: BehaviorSubject<Array<PetriNet>>;
     file: DropFile | undefined;
 
-    fcConvertToPOs: FormControl;
-    fcIncremental: FormControl;
-    fcArcWeights: FormControl;
+    fcConvertToPOs = new FormControl(false);
+    fcIncremental = new FormControl(false);
+    fcArcWeights = new FormControl(false);
 
     loading$: BehaviorSubject<boolean>;
 
@@ -59,16 +60,13 @@ export class AppComponent implements OnDestroy {
                 private _serialisationService: PetriNetSerialisationService,
                 private _regionMiner: PetriNetRegionSynthesisService,
                 minerFactory: IncrementalMinerFactoryService) {
-        this.fcConvertToPOs = new FormControl(true);
-        this.fcIncremental = new FormControl(true);
-        this.fcArcWeights = new FormControl(true);
         this.model$ = new BehaviorSubject<PetriNet>(new PetriNet());
         this.displayedModel$ = new BehaviorSubject<PetriNet>(new PetriNet());
         this._subs.push(this.model$.subscribe(net => {
             if (net.isEmpty()) {
                 this.file = undefined;
             } else {
-                this.file = new DropFile('model.pn', this._serialisationService.serialise(net));
+                this.file = new DropFile('model.json', this._serialisationService.serialise(net, PnOutputFileFormat.JSON));
             }
         }));
         this._log$ = new BehaviorSubject<Array<Trace>>([]);
@@ -86,7 +84,7 @@ export class AppComponent implements OnDestroy {
             this.mineModel();
         }));
         this._subs.push(combineLatest([this._log$.asObservable(), this.fcConvertToPOs.valueChanges]).subscribe( ([log, convertToPos]) => {
-            this.processLog(log, convertToPos);
+            this.processLog(log, convertToPos ?? false);
         }));
         // valueChanges must emit at least once, so that combineLatest works
         this.fcConvertToPOs.setValue(this.fcConvertToPOs.value);
