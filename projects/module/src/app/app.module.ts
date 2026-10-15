@@ -17,7 +17,6 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {MatRadioModule} from "@angular/material/radio";
 import {MatCheckboxModule} from "@angular/material/checkbox";
-import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {GraphBarComponent} from './cumulative-slider/graph-bar/graph-bar.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {SliderGridRowPipe} from './cumulative-slider/pipes/slider-grid-row.pipe';
@@ -26,6 +25,7 @@ import {AppRoutingModule} from "./app-routing.module";
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
 import {NgxSliderModule} from '@angular-slider/ngx-slider';
+import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 
 @NgModule({
     declarations: [
@@ -50,11 +50,11 @@ import {NgxSliderModule} from '@angular-slider/ngx-slider';
         MatInputModule,
         MatRadioModule,
         MatCheckboxModule,
-        MatButtonToggleModule,
         MatProgressSpinnerModule,
         MatIconModule,
         MatButtonModule,
         NgxSliderModule,
+        MatSlideToggleModule,
     ],
     providers: [
         {

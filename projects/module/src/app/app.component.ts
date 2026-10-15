@@ -22,12 +22,6 @@ import {BehaviorSubject, combineLatest, map, Subscription} from 'rxjs';
 import {FormControl} from "@angular/forms";
 
 
-export enum ConfigOption {
-    YES = 'yes',
-    NO = 'no',
-}
-
-
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -53,9 +47,9 @@ export class AppComponent implements OnDestroy {
     pos$: BehaviorSubject<Array<PetriNet>>;
     file: DropFile | undefined;
 
-    fcConvertToPOs = new FormControl<ConfigOption>(ConfigOption.YES);
-    fcIncremental = new FormControl<ConfigOption>(ConfigOption.YES);
-    fcArcWeights = new FormControl<ConfigOption>(ConfigOption.YES);
+    fcConvertToPOs = new FormControl(false);
+    fcIncremental = new FormControl(false);
+    fcArcWeights = new FormControl(false);
 
     loading$: BehaviorSubject<boolean>;
 
@@ -90,7 +84,7 @@ export class AppComponent implements OnDestroy {
             this.mineModel();
         }));
         this._subs.push(combineLatest([this._log$.asObservable(), this.fcConvertToPOs.valueChanges]).subscribe( ([log, convertToPos]) => {
-            this.processLog(log, convertToPos ?? ConfigOption.YES);
+            this.processLog(log, convertToPos ?? false);
         }));
         // valueChanges must emit at least once, so that combineLatest works
         this.fcConvertToPOs.setValue(this.fcConvertToPOs.value);
@@ -155,9 +149,9 @@ export class AppComponent implements OnDestroy {
         this._incrementalMinerNoWeights.clearCache();
     }
 
-    private processLog(log: Array<Trace>, convertToPOs: ConfigOption) {
+    private processLog(log: Array<Trace>, convertToPOs: boolean) {
         let concurrency: ConcurrencyRelation;
-        if (convertToPOs === ConfigOption.YES) {
+        if (convertToPOs) {
             concurrency = this._oracle.determineConcurrency(log, {
                 lookAheadDistance: 1,
                 distinguishSameLabels: false
@@ -187,15 +181,15 @@ export class AppComponent implements OnDestroy {
         }
 
         const config: RegionsConfiguration = {
-            noArcWeights: this.fcArcWeights.value === ConfigOption.NO
+            noArcWeights: !this.fcArcWeights.value
         };
 
         this.loading$.next(true);
 
         const mineStart = performance.now();
 
-        if (this.fcIncremental.value === ConfigOption.YES) {
-            const miner = this.fcArcWeights.value === ConfigOption.YES ? this._incrementalMinerWeights : this._incrementalMinerNoWeights;
+        if (this.fcIncremental.value) {
+            const miner = this.fcArcWeights.value ? this._incrementalMinerWeights : this._incrementalMinerNoWeights;
             this._minerSub = miner.mine(this._selectedIndices, config).subscribe(net => {
                 this.emitNext(net);
                 this.loading$.next(false);

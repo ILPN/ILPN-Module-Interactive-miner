@@ -38,25 +38,16 @@
         <div *ngIf="firstLogUploaded" flexLayout="row" fxFlex="50" flexLayoutAlign="space-between start" class="right-border border-color">
             <div flexLayout="column" flexLayoutAlign="start stretch" fxFlex>
                 <div flexLayout="row" flexLayoutAlign="space-between center" class="config-margin">
-                    <div fxFlex fxLayoutAlign="start center">partial orders</div>
-                    <mat-button-toggle-group [formControl]="fcConvertToPOs" aria-label="partial/total order selection">
-                        <mat-button-toggle value="yes">yes</mat-button-toggle>
-                        <mat-button-toggle value="no">no</mat-button-toggle>
-                    </mat-button-toggle-group>
+                    <div id="po" fxFlex fxLayoutAlign="start center">partial orders</div>
+                    <mat-slide-toggle [formControl]="fcConvertToPOs" aria-labelledby="po"></mat-slide-toggle>
                 </div>
                 <div flexLayout="row" flexLayoutAlign="space-between center" class="config-margin">
-                    <div fxFlex fxLayoutAlign="start center">incremental synthesis</div>
-                    <mat-button-toggle-group [formControl]="fcIncremental" aria-label="incremental/atOnce synthesis selection">
-                        <mat-button-toggle value="yes">yes</mat-button-toggle>
-                        <mat-button-toggle value="no">no</mat-button-toggle>
-                    </mat-button-toggle-group>
+                    <div id="is" fxFlex fxLayoutAlign="start center">incremental synthesis</div>
+                    <mat-slide-toggle [formControl]="fcIncremental" aria-labelledby="is"></mat-slide-toggle>
                 </div>
                 <div flexLayout="row" flexLayoutAlign="space-between center" class="config-margin">
-                    <div fxFlex fxLayoutAlign="start center">arc weights</div>
-                    <mat-button-toggle-group [formControl]="fcArcWeights" aria-label="arc weights/plain net selection">
-                        <mat-button-toggle value="yes">yes</mat-button-toggle>
-                        <mat-button-toggle value="no">no</mat-button-toggle>
-                    </mat-button-toggle-group>
+                    <div id="aw" fxFlex fxLayoutAlign="start center">arc weights</div>
+                    <mat-slide-toggle [formControl]="fcArcWeights" aria-labelledby="aw"></mat-slide-toggle>
                 </div>
                 <div flexLayout="row" flexLayoutAlign="space-between center" class="config-margin">
                     <div fxFlex fxLayoutAlign="start center">clear miner cache</div>
